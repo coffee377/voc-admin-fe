@@ -5,7 +5,13 @@ import defaultSettings from '../config/defaultSettings';
 
 const proxy = {
   /* 获取配置 */
-  'GET /settings': defaultSettings,
+  // 'GET /settings': defaultSettings,
+  'GET /settings': (req: Request, res: Response) => {
+    res
+      .header('x-auth-token', 'ABC')
+      .status(200)
+      .json({ success: true, code: '02', message: 'OK8', data: defaultSettings });
+  },
   /* 更新配置 */
   'PUT /settings': (req: Request, res: Response) => {
     const data = req.body;

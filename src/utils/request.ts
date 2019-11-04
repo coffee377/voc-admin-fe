@@ -2,8 +2,10 @@
  * request 网络请求工具
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
-import { extend } from 'umi-request';
+import { extend, RequestOptionsInit, ResponseError } from 'umi-request';
 import { notification } from 'antd';
+import { notice } from '@/components/Exception';
+import { ApiResponse } from '@/utils';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -26,7 +28,7 @@ const codeMessage = {
 /**
  * 异常处理程序
  */
-const errorHandler = (error: { response: Response }): Response => {
+const errorHandler = (error: ResponseError): void => {
   const { response } = error;
   if (response && response.status) {
     const errorText = codeMessage[response.status] || response.statusText;
@@ -35,22 +37,54 @@ const errorHandler = (error: { response: Response }): Response => {
     notification.error({
       message: `请求错误 ${status}: ${url}`,
       description: errorText,
+      duration: null,
     });
   } else if (!response) {
     notification.error({
-      description: '您的网络发生异常，无法连接服务器',
       message: '网络异常',
+      description: '您的网络发生异常，无法连接服务器',
+      duration: null,
     });
   }
-  return response;
 };
 
 /**
  * 配置request请求时的默认参数
  */
 const request = extend({
-  errorHandler, // 默认错误处理
-  credentials: 'include', // 默认请求是否带上cookie
+  /* 默认错误处理 */
+  errorHandler,
+  /* 默认请求是否带上cookie */
+  credentials: 'include',
+  // getResponse: true,
 });
+
+/* request拦截器, 改变url 或 options. */
+const requestInterceptor = (url: string, options: RequestOptionsInit) => {};
+
+/**
+ * response 拦截器, 处理 response
+ * @param response Response
+ * @param options RequestOptionsInit
+ */
+const responseInterceptor = async (response: Response, options: RequestOptionsInit) => {
+  const token = response.headers.get('x-auth-token');
+  if (token) {
+    localStorage.setItem('x-auth-token', token);
+  }
+
+  const apiData: ApiResponse = await response.clone().json();
+  const { code, message, data } = apiData;
+
+  /* API 返回异常提示处理 */
+  if (code && code !== `${0}`) {
+    notice(apiData);
+  }
+
+  return response;
+};
+
+// request.interceptors.request.use(requestInterceptor);
+request.interceptors.response.use(responseInterceptor);
 
 export default request;

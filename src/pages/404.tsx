@@ -1,5 +1,3 @@
-import React from 'react';
+import { NotFound } from '@/components/Exception';
 
-export default () => (
-    <div>I am a customized 404 page</div>
-  )
+export default NotFound;

@@ -50,7 +50,7 @@ const SettingModel: SettingModelType = {
   effects: {
     *init({ payload }: AnyAction, { put, call }: EffectsCommandMap) {
       /* 1.获取接口数据 */
-      const data = yield call(getSettings, payload);
+      const data: defaultSettings = yield call(getSettings, payload);
       /* 2.存储数据到 store */
       yield put({ type: 'save', payload: data });
     },

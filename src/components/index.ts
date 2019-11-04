@@ -1,3 +1,2 @@
-import PageLoading from '@/components/PageLoading';
-
-export default { PageLoading };
+export { default as PageLoading } from '@/components/PageLoading';
+export { default as Exception } from '@/components/Exception';

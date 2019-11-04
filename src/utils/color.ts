@@ -1,5 +1,4 @@
-
-const G2Color = [
+export const G2Color = [
   '#4E7CCC',
   '#36B3C3',
   '#4ECDA5',
@@ -12,7 +11,7 @@ const G2Color = [
   '#C82B3D',
 ];
 
-const ECharsColor = [
+export const ECharsColor = [
   '#C23531',
   '#2F4554',
   '#61A0A8',
@@ -26,10 +25,10 @@ const ECharsColor = [
   '#C4CCD3',
 ];
 
-const color = {
-  G2Color, ECharsColor,
-};
-
-export default color;
-
-export { G2Color, ECharsColor }
+// const color = {
+//   G2Color, ECharsColor,
+// };
+//
+// export default color;
+//
+// export { G2Color, ECharsColor }

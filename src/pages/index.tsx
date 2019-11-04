@@ -8,6 +8,7 @@ import styles from './index.less';
 interface IndexProps {
   dispatch: Dispatch<any>;
 }
+
 @connect()
 class Index extends Component<IndexProps> {
   componentDidMount(): void {
