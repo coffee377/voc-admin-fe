@@ -3,47 +3,59 @@
  * 更详细的 api 文档: https://github.com/umijs/umi-request
  */
 import { extend, RequestOptionsInit, ResponseError } from 'umi-request';
-import { notification } from 'antd';
+import { formatMessage } from 'umi-plugin-react/locale';
 import { notice } from '@/components/Exception';
-import { ApiResponse } from '@/utils';
+import { ApiResponse, Exception, hasApiException } from '@/utils';
 
+// TODO: 2019/11/5 15:49 国际化
 const codeMessage = {
-  200: '服务器成功返回请求的数据。',
-  201: '新建或修改数据成功。',
-  202: '一个请求已经进入后台排队（异步任务）。',
-  204: '删除数据成功。',
-  400: '发出的请求有错误，服务器没有进行新建或修改数据的操作。',
-  401: '用户没有权限（令牌、用户名、密码错误）。',
-  403: '用户得到授权，但是访问是被禁止的。',
-  404: '发出的请求针对的是不存在的记录，服务器没有进行操作。',
-  406: '请求的格式不可得。',
-  410: '请求的资源被永久删除，且不会再得到的。',
-  422: '当创建一个对象时，发生一个验证错误。',
-  500: '服务器发生错误，请检查服务器。',
-  502: '网关错误。',
-  503: '服务不可用，服务器暂时过载或维护。',
-  504: '网关超时。',
+  200: '服务器成功返回请求的数据',
+  201: '新建或修改数据成功',
+  202: '一个请求已经进入后台排队（异步任务）',
+  204: '删除数据成功',
+  400: '发出的请求有错误，服务器没有进行新建或修改数据的操作',
+  401: '用户没有权限（令牌、用户名、密码错误）',
+  403: '用户得到授权，但是访问是被禁止的',
+  404: '发出的请求针对的是不存在的记录，服务器没有进行操作',
+  406: '请求的格式不可得',
+  410: '请求的资源被永久删除，且不会再得到的',
+  422: '当创建一个对象时，发生一个验证错误',
+  500: '服务器发生错误，请检查服务器',
+  502: '网关错误',
+  503: '服务不可用，服务器暂时过载或维护',
+  504: '网关超时',
 };
 
 /**
  * 异常处理程序
  */
 const errorHandler = (error: ResponseError): void => {
-  const { response } = error;
+  const { request, response } = error;
   if (response && response.status) {
-    const errorText = codeMessage[response.status] || response.statusText;
-    const { status, url } = response;
-
-    notification.error({
-      message: `请求错误 ${status}: ${url}`,
-      description: errorText,
-      duration: null,
-    });
+    const { status, statusText, url } = response;
+    const errorMessage = codeMessage[status] || statusText;
+    const { method } = request.options;
+    const exception: Exception = {
+      title: formatMessage({
+        id: 'component.exception.request',
+        defaultMessage: 'Request Exception',
+      }),
+      url,
+      method,
+      status,
+      errorMessage,
+    };
+    notice(exception);
   } else if (!response) {
-    notification.error({
-      message: '网络异常',
-      description: '您的网络发生异常，无法连接服务器',
-      duration: null,
+    notice({
+      title: formatMessage({
+        id: 'component.exception.network',
+        defaultMessage: 'Network Anomalies',
+      }),
+      errorMessage: formatMessage({
+        id: 'component.exception.network.description',
+        defaultMessage: 'Your network failed to connect to the server',
+      }),
     });
   }
 };
@@ -68,23 +80,32 @@ const requestInterceptor = (url: string, options: RequestOptionsInit) => {};
  * @param options RequestOptionsInit
  */
 const responseInterceptor = async (response: Response, options: RequestOptionsInit) => {
+  /* 1.TOKEN 存储 */
   const token = response.headers.get('x-auth-token');
   if (token) {
     localStorage.setItem('x-auth-token', token);
   }
 
+  /* 2.约定 API 返回异常提示处理 */
   const apiData: ApiResponse = await response.clone().json();
-  const { code, message, data } = apiData;
-
-  /* API 返回异常提示处理 */
-  if (code && code !== `${0}`) {
-    notice(apiData);
+  if (hasApiException(apiData)) {
+    const { code, message } = apiData;
+    const { url, status } = response;
+    const { method } = options;
+    const exception: Exception = {
+      url,
+      method,
+      status,
+      errorCode: code,
+      errorMessage: message,
+    };
+    notice(exception);
   }
 
   return response;
 };
 
-// request.interceptors.request.use(requestInterceptor);
+request.interceptors.request.use(requestInterceptor);
 request.interceptors.response.use(responseInterceptor);
 
 export default request;

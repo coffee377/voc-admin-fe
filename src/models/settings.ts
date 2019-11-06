@@ -1,48 +1,27 @@
 import { AnyAction, Reducer } from 'redux';
-import { message } from 'antd';
 import { Effect, EffectsCommandMap, Model } from 'dva';
-import { formatMessage } from 'umi-plugin-react/locale';
-import defaultSettings, { DefaultSettings } from '../../config/defaultSettings';
-import themeColorClient from '@/components/SettingDrawer/themeColorClient';
-
 import { getSettings, updateSettings } from '@/services';
+import { SettingUp } from '@/models/index';
+import defaultSettingUp from '../../config/settingUp';
 
-/* 数据状态 */
-export interface SettingState extends DefaultSettings {}
+export interface SettingState extends SettingUp {}
 
 export interface SettingModelType extends Model {
   state: SettingState;
   reducers: {
-    save: Reducer<SettingState>;
-    getSetting: Reducer<SettingState>;
-    changeSetting: Reducer<SettingState>;
+    save: Reducer<SettingState, AnyAction>;
   };
   effects: {
     init: Effect;
+    updateSetting: Effect;
   };
 }
 
-const updateTheme = (newPrimaryColor?: string) => {
-  if (newPrimaryColor) {
-    const timeOut = 0;
-    const content = formatMessage({ id: 'theme.updating', defaultMessage: '' });
-    const hideMessage = message.loading(content, timeOut);
-    themeColorClient.changeColor(newPrimaryColor).finally(() => hideMessage());
-  }
-};
-
-const updateColorWeak: (colorWeak: boolean) => void = colorWeak => {
-  const root = document.getElementById('root');
-  if (root) {
-    root.className = colorWeak ? 'colorWeak' : '';
-  }
-};
-
 const SettingModel: SettingModelType = {
   namespace: 'settings',
-  state: defaultSettings,
+  state: defaultSettingUp,
   reducers: {
-    save: (state: DefaultSettings, { payload }: AnyAction) => ({
+    save: (state: SettingUp, { payload }: AnyAction) => ({
       ...state,
       ...payload,
     }),
@@ -50,9 +29,17 @@ const SettingModel: SettingModelType = {
   effects: {
     *init({ payload }: AnyAction, { put, call }: EffectsCommandMap) {
       /* 1.获取接口数据 */
-      const data: defaultSettings = yield call(getSettings, payload);
+      const data: SettingState = yield call(getSettings, payload);
       /* 2.存储数据到 store */
       yield put({ type: 'save', payload: data });
+    },
+    *update({ payload }: AnyAction, { call, select }: EffectsCommandMap) {
+      /* 1.获取命名空间 state 数据 */
+      const settingState: SettingState = yield select(
+        ({ settings }: { settings: SettingState }) => settings,
+      );
+      /* 2.更新服务器数据 */
+      yield call(updateSettings, settingState);
     },
   },
 } as SettingModelType;

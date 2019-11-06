@@ -64,7 +64,7 @@ const config: IConfig = {
   devtool: developmentMode ? 'source-map' : false,
   /* https://webpack.js.org/configuration/resolve/#resolve-alias */
   alias: {
-    // api: resolve(__dirname, './src/services/'),
+    assets: resolve(__dirname, 'src/assets'),
     config: resolve(__dirname, './config'),
     components: resolve(__dirname, 'src/components'),
     documents: resolve(__dirname, 'src/documents'),
