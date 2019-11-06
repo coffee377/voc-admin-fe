@@ -16,6 +16,7 @@ export default {
   pwa: false,
   iconfontUrl: '',
   collapsed: true,
+  openKeys: [],
   siteName: '数据分析平台',
   // links: [
   //   {

@@ -23,6 +23,10 @@ export interface SettingUp extends Settings {
    */
   collapsed?: boolean;
   /**
+   * 打开菜单项
+   */
+  openKeys?: string[];
+  /**
    * 配置站点名称，应用到登录框，侧边栏顶部的标题文字显示，优先级高于 title
    */
   siteName?: string;

@@ -15,7 +15,7 @@ interface SelectLangProps {
 const SelectLang: React.FC<SelectLangProps> = props => {
   const { className, reloadPage } = props;
   const selectedLang = getLocale();
-  const changeLang = ({ key }: ClickParam): void => setLocale(key, reloadPage || true);
+  const changeLang = ({ key }: ClickParam): void => setLocale(key, reloadPage || false);
   const locales = ['en-US', 'zh-CN', 'zh-TW', 'pt-BR'];
   const languageLabels = {
     'en-US': 'English',

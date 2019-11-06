@@ -1,15 +1,13 @@
 import { Random } from 'mockjs';
 import { delay } from 'roadhog-api-doc';
 import { Request, Response } from 'express';
-import defaultSettings from 'settingUp.ts';
+import defaultSettings from '../config/settingUp';
 
 const proxy = {
   /* 获取配置 */
   // 'GET /settings': defaultSettings,
   'GET /settings': (req: Request, res: Response) => {
-    res
-      .status(200)
-      .json({ success: true, code: '0', message: 'OK', data: defaultSettings });
+    res.status(200).json({ success: true, code: '0', message: 'OK', data: defaultSettings });
   },
   /* 更新配置 */
   'PUT /settings': (req: Request, res: Response) => {

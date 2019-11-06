@@ -10,6 +10,7 @@ import { HeaderViewProps } from '@ant-design/pro-layout/lib/Header';
 import { formatMessage } from 'umi-plugin-react/locale';
 import { Link } from 'umi';
 import { Authorized } from 'ant-design-pro';
+import { MenuProps } from 'antd/lib/menu';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import logo from '../assets/logo.svg';
 import { SettingUp } from '@/typings';
@@ -85,14 +86,14 @@ class BasicLayout extends PureComponent<BasicLayoutProps> {
             name: 'workplace',
             locale: 'menu.dashboard.workplace',
             icon: 'home',
-            // component: './index',
+            component: './A',
           },
           {
             path: '/dashboard/analysis',
             name: 'analysis',
             locale: 'menu.dashboard.analysis',
             icon: 'bar-chart',
-            // component: './dashboard/analysis',
+            component: './B',
             // authority: ['admin', 'user'],
           },
           {
@@ -143,6 +144,21 @@ class BasicLayout extends PureComponent<BasicLayoutProps> {
       // return <a href={menuItemProps.path}/>
       return <Link to={menuItemProps.path}>{defaultDom}</Link>;
     };
+    const menuProps: MenuProps = {
+      defaultOpenKeys: ['/admin'],
+      // defaultOpenKeys: ['/dashboard'],
+      onOpenChange: (openKeys: string[]) => {
+        // const latestOpenKey = openKeys.find(key => settings.openKeys.indexOf(key) === -1);
+        console.log(`====> ${JSON.stringify(openKeys)}`);
+        // console.log(`====> ${openKeys.pop()}`);
+        // dispatch({
+        //   type: 'settings/save',
+        //   // payload: { openKeys },
+        //   payload: { openKeys: [openKeys.pop()] },
+        // })
+      },
+    };
+
     return (
       /* https://github.com/ant-design/ant-design-pro-layout */
       /* https://ant-design.github.io/ant-design-pro-layout/ */
@@ -160,7 +176,17 @@ class BasicLayout extends PureComponent<BasicLayoutProps> {
         // pageTitleRender={() => 'A'}
         formatMessage={formatMessage}
         rightContentRender={rightContentRender}
-        fixedHeader
+        menuProps={menuProps}
+        // breadcrumbRender={(routers = []) => [
+        //   {
+        //     path: '/',
+        //     breadcrumbName: formatMessage({
+        //       id: 'menu.home',
+        //       defaultMessage: 'Home',
+        //     }),
+        //   },
+        //   ...routers,
+        // ]}
         // locale="zh-CN"
       >
         {children}

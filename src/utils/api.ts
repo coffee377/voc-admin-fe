@@ -6,22 +6,21 @@ export interface ApiStructure {
   data: any;
 }
 
-export interface Exception extends ExceptionTitleProps, ExceptionDescriptionProps{
-}
+export interface Exception extends ExceptionTitleProps, ExceptionDescriptionProps {}
 
 export interface ExceptionDescriptionProps {
-  title?: string
-  url?: string
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'TRACE' | 'CONNECT' | string
-  status?: number
-  errorCode?: string | number
-  errorMessage: string
+  title?: string;
+  url?: string;
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'TRACE' | 'CONNECT' | string;
+  status?: number;
+  errorCode?: string | number;
+  errorMessage: string;
 }
 
 export interface ExceptionTitleProps {
-  title?: string
-  status?: number
-  errorCode?: string | number
+  title?: string;
+  status?: number;
+  errorCode?: string | number;
 }
 
 export type ApiResponse = ApiStructure | any;
@@ -34,7 +33,8 @@ export const hasApiProperty: HasProperty<ApiStructure> = (
   name: string,
 ) => apiStructure && apiStructure[name] !== undefined;
 
-export const isApiStructured: Structured = (response: ApiResponse) => hasApiProperty(response, 'data');
+export const isApiStructured: Structured = (response: ApiResponse) =>
+  hasApiProperty(response, 'data');
 
 export const hasApiException: HasException = (response: ApiResponse) => {
   const { code } = response;

@@ -1,7 +1,7 @@
 import { AnyAction, Reducer } from 'redux';
 import { Effect, EffectsCommandMap, Model } from 'dva';
 import { getSettings, updateSettings } from '@/services';
-import { SettingUp } from '@/models/index';
+import { SettingUp } from '@/typings';
 import defaultSettingUp from '../../config/settingUp';
 
 export interface SettingState extends SettingUp {}

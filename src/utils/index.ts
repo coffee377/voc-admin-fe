@@ -9,7 +9,7 @@ export {
   Exception,
   ExceptionTitleProps,
   ExceptionDescriptionProps,
-} from './api';
+} from '@/utils/api';
 
 const delay = (time: any) => new Promise(resolve => setTimeout(resolve, time));
 export { delay };
