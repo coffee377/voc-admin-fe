@@ -1,4 +1,5 @@
 import component from './zh-TW/component';
+import menu from '@/locales/zh-TW/menu';
 
 export default {
   'navBar.lang': '語言',
@@ -14,4 +15,5 @@ export default {
   'app.logout.cancel': '否',
 
   ...component,
+  ...menu,
 };

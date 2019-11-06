@@ -1,4 +1,5 @@
 import component from './en-US/component';
+import menu from '@/locales/en-US/menu';
 
 export default {
   'navBar.lang': 'Languages',
@@ -14,4 +15,5 @@ export default {
   'app.logout.cancel': 'No',
 
   ...component,
+  ...menu,
 };
