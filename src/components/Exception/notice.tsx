@@ -1,13 +1,14 @@
 import { notification, Tag, Typography } from 'antd';
-import React, { Fragment, PureComponent } from 'react';
+import React, { Fragment } from 'react';
 import { formatMessage } from 'umi-plugin-react/locale';
-import { Exception, ExceptionDescriptionProps, ExceptionTitleProps } from '@/utils';
-
+import { Exception, ExceptionDescriptionProps, ExceptionTitleProps } from '@/utils/error';
 
 export const notice = (exception: Exception, duration?: number) => {
+  const { key } = exception;
   notification.error({
-    message: <ExceptionTitle {...exception}/>,
-    description: <ExceptionDescription {...exception}/>,
+    key,
+    message: <ExceptionTitle {...exception} />,
+    description: <ExceptionDescription {...exception} />,
     duration: duration || null,
   });
 };
@@ -25,55 +26,76 @@ const HttpMethodColor = {
 
 const { Text } = Typography;
 
-class ExceptionTitle extends PureComponent<ExceptionTitleProps> {
-  static defaultProps = {
-    // title: '默认标题',
-  };
+const ExceptionTitle: React.FC<ExceptionTitleProps> = ({ status, title, code }) => (
+  <Fragment>
+    <Text ellipsis type="secondary">
+      <Tag color="red" visible={status}>
+        {status}
+      </Tag>
+      <Tag visible={code && String(status) !== String(code)}>{code}</Tag>
+      {title ||
+        formatMessage({
+          id: 'component.exception.api.error',
+          defaultMessage: 'API Request Exception',
+        })}
+    </Text>
+  </Fragment>
+);
 
-  render() {
-    const { title, status, errorCode } = this.props;
-    return (
-      <Fragment>
-        <Text ellipsis type="secondary">
-          <Tag color="red" visible={status}>{status}</Tag>
-          <Tag visible={errorCode}>{errorCode}</Tag>
-          {title || formatMessage({ id: 'component.exception.api.error', defaultMessage: 'API Request Exception' })}
-        </Text>
-      </Fragment>
-    );
-  }
+/**
+ * URL 属性
+ */
+export interface URLContentProps {
+  url: string;
+  method: string;
+  color: string;
 }
 
-class ExceptionDescription extends PureComponent<ExceptionDescriptionProps> {
-  static defaultProps = {
-    // title: '默认标题',
+/**
+ * URL 描述
+ * @param url 请求地址
+ * @param method 请求方法
+ * @param color 标签颜色
+ * @constructor
+ */
+const URLContent: React.FC<URLContentProps> = ({ url, method, color }) => (
+  <Fragment>
+    <Tag color={color} visible={method}>
+      {method}
+    </Tag>
+    <span>{url}</span>
+  </Fragment>
+);
+
+/**
+ * 异常描述
+ * @param props ExceptionDescriptionProps
+ * @constructor
+ */
+const ExceptionDescription: React.FC<ExceptionDescriptionProps> = props => {
+  const { url, method, code, message } = props;
+  const METHOD = (method || '').toUpperCase();
+  const Desc = () => {
+    if (METHOD) {
+      return (
+        <Fragment>
+          <URLContent method={METHOD} url={url} color={HttpMethodColor[METHOD]} />
+          <Text
+            copyable={{
+              text: JSON.stringify({ url, method, code, message }),
+            }}
+            ellipsis
+            type="secondary"
+          />
+        </Fragment>
+      );
+    }
+    return null;
   };
-
-  render() {
-    const { url, method, errorCode, errorMessage } = this.props;
-    const METHOD = (method || '').toUpperCase();
-
-    const text = () => {
-      if (METHOD) {
-        const color = HttpMethodColor[METHOD];
-        return (
-          <Text copyable={{
-            text: JSON.stringify({
-              url, method, code: errorCode, message: errorMessage,
-            }),
-          }} ellipsis type="secondary">
-            <Tag color={color} visible={METHOD}>{METHOD}</Tag>
-            <span>{url}</span>
-          </Text>
-        );
-      }
-      return '';
-    };
-    return (
-      <Fragment>
-        {text()}
-        <div style={{ marginTop: 10 }}>{errorMessage || ''}</div>
-      </Fragment>
-    );
-  }
-}
+  return (
+    <Fragment>
+      <Desc />
+      <div style={{ marginTop: 10 }}>{message || ''}</div>
+    </Fragment>
+  );
+};

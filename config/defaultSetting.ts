@@ -1,9 +1,9 @@
-import { SettingUp } from '@/typings';
+import { SettingState } from '@/models/settings';
 
-export default {
+const defaultSetting = {
   navTheme: 'dark',
   primaryColor: '#1890FF',
-  layout: 'side',
+  layout: 'sidemenu',
   contentWidth: 'Fluid',
   fixedHeader: true,
   autoHideHeader: false,
@@ -16,7 +16,6 @@ export default {
   pwa: false,
   iconfontUrl: '',
   collapsed: true,
-  openKeys: [],
   siteName: '数据分析平台',
   // links: [
   //   {
@@ -27,4 +26,6 @@ export default {
   // ],
   links: false,
   copyright: '2019 安徽晶奇科技网络股份有限公司 - 技术研究中心出品',
-} as SettingUp;
+} as SettingState;
+
+export default defaultSetting;

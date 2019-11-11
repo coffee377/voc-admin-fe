@@ -6,9 +6,6 @@ export {
   hasApiException,
   ApiResponse,
   ApiStructure,
-  Exception,
-  ExceptionTitleProps,
-  ExceptionDescriptionProps,
 } from '@/utils/api';
 
 const delay = (time: any) => new Promise(resolve => setTimeout(resolve, time));

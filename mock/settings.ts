@@ -1,7 +1,7 @@
 import { Random } from 'mockjs';
 import { delay } from 'roadhog-api-doc';
 import { Request, Response } from 'express';
-import defaultSettings from '../config/settingUp';
+import defaultSettings from '../config/defaultSetting';
 
 const proxy = {
   /* 获取配置 */

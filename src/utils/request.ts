@@ -1,12 +1,13 @@
 /**
  * request 网络请求工具
- * 更详细的 api 文档: https://github.com/umijs/umi-request
+ * 更详细的 api 文档 : https://github.com/umijs/umi-request
  */
 import { extend, RequestOptionsInit, ResponseError } from 'umi-request';
 import { formatMessage } from 'umi-plugin-react/locale';
+import hash from 'object-hash';
+import { ApiResponse, hasApiException } from '@/utils';
+import { BizError, errorKey, Exception } from '@/utils/error';
 import { notice } from '@/components/Exception';
-import { ApiResponse, Exception, hasApiException } from '@/utils';
-
 // TODO: 2019/11/5 15:49 国际化
 const codeMessage = {
   200: '服务器成功返回请求的数据',
@@ -31,32 +32,34 @@ const codeMessage = {
  */
 const errorHandler = (error: ResponseError): void => {
   const { request, response } = error;
+
   if (response && response.status) {
-    const { status, statusText, url } = response;
-    const errorMessage = codeMessage[status] || statusText;
-    const { method } = request.options;
-    const exception: Exception = {
-      title: formatMessage({
-        id: 'component.exception.request',
-        defaultMessage: 'Request Exception',
-      }),
-      url,
-      method,
-      status,
-      errorMessage,
-    };
-    notice(exception);
+      const { status, statusText, url } = response;
+      const message = codeMessage[status] || statusText;
+      const { method } = request.options;
+      const exception: Exception = {
+        title: formatMessage({
+          id: 'component.exception.request',
+          defaultMessage: 'Request Exception',
+        }),
+        status,
+        url,
+        method,
+        message,
+      };
+      throw new BizError({ ...exception, key: hash(exception) });
   } else if (!response) {
-    notice({
+    const exception: Exception = {
       title: formatMessage({
         id: 'component.exception.network',
         defaultMessage: 'Network Anomalies',
       }),
-      errorMessage: formatMessage({
+      message: formatMessage({
         id: 'component.exception.network.description',
         defaultMessage: 'Your network failed to connect to the server',
       }),
-    });
+    };
+    throw new BizError({ ...exception, key: errorKey(exception) });
   }
 };
 
@@ -65,7 +68,7 @@ const errorHandler = (error: ResponseError): void => {
  */
 const request = extend({
   /* 默认错误处理 */
-  errorHandler,
+  // errorHandler,
   /* 默认请求是否带上cookie */
   credentials: 'include',
   // getResponse: true,
@@ -86,26 +89,26 @@ const responseInterceptor = async (response: Response, options: RequestOptionsIn
     localStorage.setItem('x-auth-token', token);
   }
 
-  /* 2.约定 API 返回异常提示处理 */
-  const apiData: ApiResponse = await response.clone().json();
-  if (hasApiException(apiData)) {
-    const { code, message } = apiData;
-    const { url, status } = response;
-    const { method } = options;
-    const exception: Exception = {
-      url,
-      method,
-      status,
-      errorCode: code,
-      errorMessage: message,
-    };
-    notice(exception);
-  }
+  // /* 2.约定 API 返回异常提示处理 */
+  // const apiData: ApiResponse = await response.clone().json();
+  // if (hasApiException(apiData)) {
+  //   const { code, message } = apiData;
+  //   const { url, status } = response;
+  //   const { method } = options;
+  //   const exception: Exception = {
+  //     status,
+  //     code,
+  //     url,
+  //     method,
+  //     message,
+  //   };
+  //   notice({ ...exception, key: errorKey(exception) });
+  // }
 
   return response;
 };
 
-request.interceptors.request.use(requestInterceptor);
+// request.interceptors.request.use(requestInterceptor);
 request.interceptors.response.use(responseInterceptor);
 
 export default request;

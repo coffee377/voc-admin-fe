@@ -1,10 +1,40 @@
 import { AnyAction, Reducer } from 'redux';
 import { Effect, EffectsCommandMap, Model } from 'dva';
+import { Settings } from '@ant-design/pro-layout';
+import { WithFalse } from '@ant-design/pro-layout/lib/typings';
 import { getSettings, updateSettings } from '@/services';
-import { SettingUp } from '@/typings';
-import defaultSettingUp from '../../config/settingUp';
+import defaultSetting from '../../config/defaultSetting';
+import Link from '@/components/Link';
+import { VocConfig } from '@/typings';
 
-export interface SettingState extends SettingUp {}
+// export interface SettingState extends Settings {
+//   /**
+//    * 菜单栏是否折叠
+//    */
+//   collapsed?: boolean;
+//   /**
+//    * 配置站点名称，应用到登录框，侧边栏顶部的标题文字显示，优先级高于 title
+//    */
+//   siteName?: string;
+//   /**
+//    * 超链接
+//    */
+//   links?: WithFalse<Link[]>;
+//   /**
+//    * 配置版权声明
+//    */
+//   copyright?: string;
+//   /**
+//    * 配置站点 Logo
+//    */
+//   logoPath?: string;
+//   /**
+//    * 配置项目中接口的前缀
+//    */
+//   apiPrefix?: string;
+// }
+
+export type SettingState = Partial<Settings> & Partial<VocConfig>
 
 export interface SettingModelType extends Model {
   state: SettingState;
@@ -19,9 +49,9 @@ export interface SettingModelType extends Model {
 
 const SettingModel: SettingModelType = {
   namespace: 'settings',
-  state: defaultSettingUp,
+  state: defaultSetting,
   reducers: {
-    save: (state: SettingUp, { payload }: AnyAction) => ({
+    save: (state: SettingState, { payload }: AnyAction) => ({
       ...state,
       ...payload,
     }),

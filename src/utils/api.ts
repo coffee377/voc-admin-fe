@@ -1,4 +1,3 @@
-/* API JSON 响应数据结构 */
 export interface ApiStructure {
   success?: boolean;
   code?: string | number;
@@ -6,22 +5,9 @@ export interface ApiStructure {
   data: any;
 }
 
-export interface Exception extends ExceptionTitleProps, ExceptionDescriptionProps {}
+// export const SUCCESS: String = 'OK' || 'YES' || 'SUCCESS';
 
-export interface ExceptionDescriptionProps {
-  title?: string;
-  url?: string;
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'HEAD' | 'OPTIONS' | 'TRACE' | 'CONNECT' | string;
-  status?: number;
-  errorCode?: string | number;
-  errorMessage: string;
-}
-
-export interface ExceptionTitleProps {
-  title?: string;
-  status?: number;
-  errorCode?: string | number;
-}
+const SUCCESS = (message:string) => message.toUpperCase() === 'OK' || message.toUpperCase() === 'YES' || message.toUpperCase() === 'SUCCESS'
 
 export type ApiResponse = ApiStructure | any;
 export type HasProperty<T extends ApiResponse> = (response: T, name: string) => boolean;
@@ -34,10 +20,10 @@ export const hasApiProperty: HasProperty<ApiStructure> = (
 ) => apiStructure && apiStructure[name] !== undefined;
 
 export const isApiStructured: Structured = (response: ApiResponse) =>
-  hasApiProperty(response, 'data');
+  hasApiProperty(response, 'message');
 
 export const hasApiException: HasException = (response: ApiResponse) => {
-  const { code } = response;
+  const { message } = response;
   /* API 返回异常提示处理 */
-  return isApiStructured(response) && code && code !== `${0}`;
+  return isApiStructured(response) && !SUCCESS(message);
 };

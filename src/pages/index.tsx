@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { formatMessage } from 'umi-plugin-react/locale';
 import { Dispatch } from 'redux';
+import { Link } from 'umi';
 import styles from './index.less';
 import { CodePreview } from '@/components';
 
@@ -34,6 +35,10 @@ class Index extends Component<IndexProps> {
           </ul>
         </div>
         <CodePreview>npm -v</CodePreview>
+        <CodePreview>
+          <Link to="/home">主页</Link>
+        </CodePreview>
+
       </Fragment>
     );
   }

@@ -1,5 +1,7 @@
 import { Effect, Model } from 'dva';
 import { AnyAction, Reducer } from 'redux';
+import { MenuDataItem } from '@ant-design/pro-layout';
+import { IRoute } from 'umi-types';
 
 /**
  * 标签
@@ -37,6 +39,8 @@ export interface AccountModelState {
   status?: LoginStatus;
   type?: LoginType;
   currentUser?: User;
+  menus?: MenuDataItem[];
+  routes?: IRoute[];
 }
 
 export interface AccountModelType extends Model {
@@ -55,7 +59,12 @@ export interface AccountModelType extends Model {
 
 const AccountModel: AccountModelType = {
   namespace: 'account',
-  state: {},
+  state: {
+    status: 's',
+    type: '',
+    menus: [],
+    routes: [],
+  },
   reducers: {},
 } as AccountModelType;
 

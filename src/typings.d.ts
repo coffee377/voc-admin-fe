@@ -15,35 +15,59 @@ export interface DispatchProps<A extends Action = AnyAction> {
 }
 
 /**
+ * @deprecated
  * 扩展配置
  */
-export interface SettingUp extends Settings {
+export interface SettingUp extends Settings, Partial<VocConfig> {
+  // /**
+  //  * 菜单栏是否折叠
+  //  */
+  // collapsed?: boolean;
+  // /**
+  //  * 配置站点名称，应用到登录框，侧边栏顶部的标题文字显示，优先级高于 title
+  //  */
+  // siteName?: string;
+  // /**
+  //  * 超链接
+  //  */
+  // links?: WithFalse<Link[]>;
+  // /**
+  //  * 配置版权声明
+  //  */
+  // copyright?: string;
+  // /**
+  //  * 配置站点 Logo
+  //  */
+  // logoPath?: string;
+  // /**
+  //  * 配置项目中接口的前缀
+  //  */
+  // apiPrefix?: string;
+}
+
+export interface VocConfig {
   /**
    * 菜单栏是否折叠
    */
-  collapsed?: boolean;
-  /**
-   * 打开菜单项
-   */
-  openKeys?: string[];
+  collapsed: boolean;
   /**
    * 配置站点名称，应用到登录框，侧边栏顶部的标题文字显示，优先级高于 title
    */
-  siteName?: string;
+  siteName: string;
   /**
    * 超链接
    */
-  links?: WithFalse<Link[]>;
+  links: WithFalse<Link[]>;
   /**
    * 配置版权声明
    */
-  copyright?: string;
+  copyright: string;
   /**
    * 配置站点 Logo
    */
-  logoPath?: string;
+  logoPath: string;
   /**
    * 配置项目中接口的前缀
    */
-  apiPrefix?: string;
+  apiPrefix: string;
 }
