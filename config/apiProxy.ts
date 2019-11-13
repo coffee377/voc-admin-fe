@@ -2,9 +2,9 @@ type Proxy = object | [object, Function];
 
 const proxy: Proxy = {
   '/api': {
-    target: 'http://yapi.demo.qunar.com/mock/811/',
+    target: 'http://yapi.demo.qunar.com',
     changeOrigin: true,
-    // pathRewrite: { '^/api': '' },
+    pathRewrite: { '^/api': '/mock/811/' },
   },
 };
 

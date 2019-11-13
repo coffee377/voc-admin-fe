@@ -2,9 +2,17 @@
  * request 网络请求工具
  * 更详细的 api 文档 : https://github.com/umijs/umi-request
  */
-import { extend, RequestOptionsInit, ResponseError } from 'umi-request';
+import {
+  extend,
+  RequestInterceptor,
+  RequestOptionsInit,
+  ResponseError,
+  ResponseInterceptor,
+} from 'umi-request';
 import { formatMessage } from 'umi-plugin-react/locale';
 import hash from 'object-hash';
+import { useContext } from 'react';
+import { RouteContext } from '@ant-design/pro-layout';
 import { BizError, errorKey, Exception } from '@/utils/error';
 // TODO: 2019/11/5 15:49 国际化
 const codeMessage = {
@@ -67,46 +75,62 @@ const errorHandler = (error: ResponseError): void => {
 const request = extend({
   /* 默认错误处理 */
   // errorHandler,
+  // headers: {
+  //   'x-auth-token': localStorage.getItem('x-auth-token'),
+  // },
+  /* API 前缀 */
+  // prefix: 'http://yapi.demo.qunar.com/mock/811/api',
   /* 默认请求是否带上cookie */
   credentials: 'include',
   // getResponse: true,
 });
 
-/* request拦截器, 改变url 或 options. */
-const requestInterceptor = (url: string, options: RequestOptionsInit) => {};
+/**
+ * TOKEN 优先级 params > localStorage
+ * request拦截器, 改变url 或 options.
+ * @param url
+ * @param options
+ */
+const requestInterceptor: RequestInterceptor = (url: string, options: RequestOptionsInit) => {
+  const newUrl = url;
+  const storageToken = localStorage.getItem('x-auth-token');
+  const { token } = options.params;
+  const mergeToken = token || storageToken;
+  if (mergeToken) {
+    const { headers } = options;
+    headers['x-auth-token'] = mergeToken;
+  }
+  return { url: newUrl, options };
+};
 
 /**
  * response 拦截器, 处理 response
  * @param response Response
  * @param options RequestOptionsInit
  */
-const responseInterceptor = async (response: Response, options: RequestOptionsInit) => {
-  /* 1.TOKEN 存储 */
-  const token = response.headers.get('x-auth-token');
-  if (token) {
-    localStorage.setItem('x-auth-token', token);
+const responseInterceptor: ResponseInterceptor = async (
+  response: Response,
+  options: RequestOptionsInit,
+) => {
+  /* 1.用户登陆后存储 TOKEN  */
+  // TODO: 2019/11/13 16:13 为提供性能，考虑迁移代码至登陆完成后的逻辑中
+  const { url } = response;
+  console.log(`url =====> ${url}`);
+  // const personal = useContext(RouteContext);
+  const loginReg = new RegExp('.*/api/menu.*');
+  if (loginReg.test(url)) {
+    const { headers } = response;
+    const token = headers.get('x-auth-token');
+    console.log(token);
+    if (token) {
+      localStorage.setItem('x-auth-token', token);
+    }
   }
-
-  // /* 2.约定 API 返回异常提示处理 */
-  // const apiData: ApiResponse = await response.clone().json();
-  // if (hasApiException(apiData)) {
-  //   const { code, message } = apiData;
-  //   const { url, status } = response;
-  //   const { method } = options;
-  //   const exception: Exception = {
-  //     status,
-  //     code,
-  //     url,
-  //     method,
-  //     message,
-  //   };
-  //   notice({ ...exception, key: errorKey(exception) });
-  // }
 
   return response;
 };
 
-// request.interceptors.request.use(requestInterceptor);
+request.interceptors.request.use(requestInterceptor);
 request.interceptors.response.use(responseInterceptor);
 
 export default request;

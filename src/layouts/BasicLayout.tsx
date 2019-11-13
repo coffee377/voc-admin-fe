@@ -55,7 +55,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       dispatch({
         type: 'menu/getMenusByUserId',
         // TODO: 2019/11/11 10:40 替换真实数据
-        payload: { uid: '1', token: 'TEST_TOKEN' },
+        payload: { uid: '1', token: 'DD' },
       });
     }
   }, []);

@@ -7,4 +7,5 @@ export default {
   'menu.admin.organization': 'Organization',
   'menu.admin.user': 'User',
   'menu.admin.authority': 'Authority',
+  'menu.admin.interface': 'Interface',
 };

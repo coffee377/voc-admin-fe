@@ -7,4 +7,5 @@ export default {
   'menu.admin.organization': '組織架構',
   'menu.admin.user': '用戶管理',
   'menu.admin.authority': '權限管理',
+  'menu.admin.interface': '接口配置',
 };

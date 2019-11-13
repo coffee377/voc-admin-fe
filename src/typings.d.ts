@@ -51,6 +51,10 @@ export interface VocConfig {
    * 配置项目中接口的前缀
    */
   apiPrefix: string;
+  /**
+   * 门户入口正则表达式
+   */
+  portalReg: RegExp;
 }
 
 export declare type WithFalse<T> = T | false;

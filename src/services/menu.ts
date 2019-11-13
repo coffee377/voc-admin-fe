@@ -1,5 +1,5 @@
 import { request } from '@/utils';
 
 export async function getMenusByUserId(uid: string, token?: string) {
-  return request(`/menu/${uid}`, { method: 'GET', params: { token } });
+  return request(`/api/menu/${uid}`, { method: 'GET', params: { token } });
 }

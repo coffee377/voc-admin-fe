@@ -17,6 +17,7 @@ const defaultSetting: SettingState = {
   iconfontUrl: '',
   collapsed: true,
   siteName: '数据分析平台',
+  portalReg: '.*/api/menu.*',
   // links: [
   //   {
   //     title: '百度',

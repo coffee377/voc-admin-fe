@@ -58,22 +58,29 @@ const customMenu: MenuDataItem[] = [
         locale: 'menu.admin.authority',
         icon: 'key',
       },
+      {
+        path: '/admin/interface',
+        name: 'interface',
+        locale: 'menu.admin.interface',
+        icon: 'key',
+      },
     ],
   },
 ];
 
-const isValidToken: (token: string) => boolean = (token: string) => !!(token && token === 'TEST_TOKEN');
+const isValidToken: (token: string) => boolean = (token: string) =>
+  !!(token && token === 'TEST_TOKEN');
 
 export default {
-  'GET /menu/1': (req: Request, res: Response) => {
-    const { token } = req.query;
-    if (isValidToken(token)) {
-      res.status(200).json(customMenu);
-      // res.status(200).json({ code: 2, message: 'ok', data: customMenu });
-      // res.status(500).json();
-      // res.status(200).json({ code: 2, message: 'successs' });
-    } else {
-      res.status(403).json({ message: '没有访问权限' });
-    }
-  },
+  // 'GET /menu/1': (req: Request, res: Response) => {
+  //   const { token } = req.query;
+  //   if (isValidToken(token)) {
+  //     res.status(200).json(customMenu);
+  //     // res.status(200).json({ code: 2, message: 'ok', data: customMenu });
+  //     // res.status(500).json();
+  //     // res.status(200).json({ code: 2, message: 'successs' });
+  //   } else {
+  //     res.status(403).json({ message: '没有访问权限' });
+  //   }
+  // },
 };
