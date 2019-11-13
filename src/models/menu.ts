@@ -30,12 +30,8 @@ const MenuModel: MenuModelType = {
       /* 1.获取接口数据 */
       const { uid, token } = payload;
       const data = yield call(getMenusByUserId, uid, token);
-
       /* 2.存储数据到 store */
-      // console.log(`存储数据到 store =========> ${JSON.stringify({ type: 'save', payload: data })}`);
-      // if (data) {
       yield put({ type: 'save', payload: data || [] });
-      // }
     },
   },
 } as MenuModelType;

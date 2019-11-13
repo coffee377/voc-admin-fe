@@ -5,9 +5,7 @@
 import { extend, RequestOptionsInit, ResponseError } from 'umi-request';
 import { formatMessage } from 'umi-plugin-react/locale';
 import hash from 'object-hash';
-import { ApiResponse, hasApiException } from '@/utils';
 import { BizError, errorKey, Exception } from '@/utils/error';
-import { notice } from '@/components/Exception';
 // TODO: 2019/11/5 15:49 国际化
 const codeMessage = {
   200: '服务器成功返回请求的数据',
@@ -34,20 +32,20 @@ const errorHandler = (error: ResponseError): void => {
   const { request, response } = error;
 
   if (response && response.status) {
-      const { status, statusText, url } = response;
-      const message = codeMessage[status] || statusText;
-      const { method } = request.options;
-      const exception: Exception = {
-        title: formatMessage({
-          id: 'component.exception.request',
-          defaultMessage: 'Request Exception',
-        }),
-        status,
-        url,
-        method,
-        message,
-      };
-      throw new BizError({ ...exception, key: hash(exception) });
+    const { status, statusText, url } = response;
+    const message = codeMessage[status] || statusText;
+    const { method } = request.options;
+    const exception: Exception = {
+      title: formatMessage({
+        id: 'component.exception.request',
+        defaultMessage: 'Request Exception',
+      }),
+      status,
+      url,
+      method,
+      message,
+    };
+    throw new BizError({ ...exception, key: hash(exception) });
   } else if (!response) {
     const exception: Exception = {
       title: formatMessage({

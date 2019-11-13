@@ -1,6 +1,6 @@
 import { SettingState } from '@/models/settings';
 
-const defaultSetting = {
+const defaultSetting: SettingState = {
   navTheme: 'dark',
   primaryColor: '#1890FF',
   layout: 'sidemenu',
@@ -12,7 +12,7 @@ const defaultSetting = {
   menu: {
     locale: true,
   },
-  // title: 'AntDesign Pro2',
+  // title: 'AntDesign Pro',
   pwa: false,
   iconfontUrl: '',
   collapsed: true,
@@ -24,8 +24,10 @@ const defaultSetting = {
   //     blankTarget: true,
   //   },
   // ],
-  links: false,
-  copyright: '2019 安徽晶奇科技网络股份有限公司 - 技术研究中心出品',
+  // links: false,
+  // copyrightPrefix: false,
+  // copyright: false,
+  // copyright: '安徽晶奇科技网络股份有限公司 - 技术研究中心出品',
 } as SettingState;
 
 export default defaultSetting;

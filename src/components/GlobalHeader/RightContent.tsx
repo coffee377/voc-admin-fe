@@ -5,9 +5,10 @@ import { connect } from 'dva';
 import { HeaderViewProps } from '@ant-design/pro-layout/lib/Header';
 import SelectLang from '../SelectLang';
 import styles from './style.less';
-import { DispatchProps, SettingUp } from '@/typings';
+import { DispatchProps } from '@/typings';
 import Logout from '@/components/GlobalHeader/Logout';
 import Help from '@/components/GlobalHeader/Help';
+import { SettingState } from '@/models/settings';
 
 // import { ConnectProps, ConnectState } from '@/models/connect';
 
@@ -54,15 +55,18 @@ const GlobalHeaderRight: React.FC<GlobalHeaderRightProps> = props => {
 
       {/* <Avatar /> */}
       <Help className={styles.action} />
-      <Logout className={styles.action} onConfirm={() => {
-        dispatch({ type: 'account/logout', payload: { copyright: '测试' } });
-      }}/>
+      <Logout
+        className={styles.action}
+        onConfirm={() => {
+          dispatch({ type: 'account/logout', payload: { copyright: '测试' } });
+        }}
+      />
       <SelectLang className={styles.action} />
     </div>
   );
 };
 
-const mapStateToProps = ({ settings }: SettingUp) => ({
+const mapStateToProps = ({ settings }: SettingState) => ({
   theme: settings.navTheme,
   layout: settings.layout,
 });

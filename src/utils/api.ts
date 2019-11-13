@@ -1,13 +1,17 @@
+/**
+ * 约定 API 响应中含有 message 属性，即 ApiStructure
+ */
 export interface ApiStructure {
   success?: boolean;
   code?: string | number;
-  message?: string;
-  data: any;
+  message: string;
+  data?: any;
 }
 
-// export const SUCCESS: String = 'OK' || 'YES' || 'SUCCESS';
-
-const SUCCESS = (message:string) => message.toUpperCase() === 'OK' || message.toUpperCase() === 'YES' || message.toUpperCase() === 'SUCCESS'
+const SUCCESS = (message: string) =>
+  message.toUpperCase() === 'OK' ||
+  message.toUpperCase() === 'YES' ||
+  message.toUpperCase() === 'SUCCESS';
 
 export type ApiResponse = ApiStructure | any;
 export type HasProperty<T extends ApiResponse> = (response: T, name: string) => boolean;

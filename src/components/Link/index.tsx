@@ -1,26 +1,30 @@
 import React from 'react';
+import { StyleProps } from '@/typings';
 
-export interface LinkProps {
-  key?: string;
+export interface LinkProps extends Partial<StyleProps> {
+  id?: string | number;
   title: React.ReactNode;
   href?: string;
   blankTarget?: boolean;
-  className?: string;
 }
 
-class Link extends React.PureComponent<LinkProps> {
-  static defaultProps = {
-    blankTarget: true,
-  };
+const Link: React.FC<LinkProps> = props => {
+  const { id, title, href, blankTarget, style, className } = props;
+  return (
+    <a
+      key={id}
+      target={blankTarget ? '_blank' : '_self'}
+      href={href}
+      style={style}
+      className={className}
+    >
+      {title}
+    </a>
+  );
+};
 
-  render() {
-    const { title, href, blankTarget, className } = this.props;
-    return (
-      <a target={blankTarget ? '_blank' : '_self'} href={href} className={className}>
-        {title}
-      </a>
-    );
-  }
-}
+Link.defaultProps = {
+  blankTarget: true,
+};
 
 export default Link;

@@ -28,7 +28,7 @@ export const dva = {
       let exception;
       if (name === 'ResponseError') {
         const { data, request, response } = err;
-        // console.log(data);
+        console.log(data);
         if (response && response.status) {
           const { status, statusText, url } = response;
           let { message } = data;
@@ -45,7 +45,7 @@ export const dva = {
             message,
           };
         } else if (!response) {
-           exception = {
+          exception = {
             title: formatMessage({
               id: 'component.exception.network',
               defaultMessage: 'Network Anomalies',
