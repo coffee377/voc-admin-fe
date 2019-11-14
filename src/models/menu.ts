@@ -28,9 +28,9 @@ const MenuModel: MenuModelType = {
   effects: {
     *getMenusByUserId({ payload }: AnyAction, { call, put }: EffectsCommandMap) {
       /* 1.获取接口数据 */
-      const { uid, token } = payload;
-      const data = yield call(getMenusByUserId, uid, token);
-      console.log(`响应数据 => ${JSON.stringify(data)}`);
+      const { uid, token, lang } = payload;
+      const data = yield call(getMenusByUserId, uid, token, lang);
+      // console.log(`响应数据 => ${JSON.stringify(data)}`);
 
       /* 2.存储数据到 store */
       yield put({ type: 'save', payload: data || [] });

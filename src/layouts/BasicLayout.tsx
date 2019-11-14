@@ -10,7 +10,7 @@ import { HeaderViewProps } from '@ant-design/pro-layout/lib/Header';
 import { Link } from 'umi';
 import { WithFalse } from '@ant-design/pro-layout/es/typings';
 import { Breadcrumb, Icon, Tabs } from 'antd';
-import { formatMessage } from 'umi-plugin-react/locale';
+import { formatMessage, getLocale } from 'umi-plugin-react/locale';
 import { AnyAction } from 'redux';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import logo from '../assets/logo.svg';
@@ -55,7 +55,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       dispatch({
         type: 'menu/getMenusByUserId',
         // TODO: 2019/11/11 10:40 替换真实数据
-        payload: { uid: '1', token: 'DD' },
+        payload: { uid: '1', lang: getLocale() },
       });
     }
   }, []);
@@ -95,77 +95,41 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
 
   /** 自定义菜单项的 render 方法 */
   const menuItemRender: BasicLayoutProps['menuItemRender'] = (
-    menuDataItem,
+    menuDataItem: MenuDataItem & { isUrl: boolean },
     defaultDom: React.ReactNode,
   ) => {
-    // console.log(menuDataItem);
-    if (menuDataItem.isUrl) {
-      // console.log(defaultDom);
-      // return defaultDom;
-      return (
-        <a href={menuDataItem.path} target="_blank" rel="noopener noreferrer">
-          {menuDataItem.name}
-        </a>
-      );
+    /* 叶子节点 */
+    if (!menuDataItem.children) {
+      if (menuDataItem.isUrl) {
+        return (
+          <a href={menuDataItem.path} target="_blank" rel="noopener noreferrer">
+            {menuDataItem.name}
+          </a>
+        );
+      }
+      return <Link to={menuDataItem.path}>{defaultDom}</Link>;
     }
-    return <Link to={menuDataItem.path}>{defaultDom}</Link>;
+    return defaultDom;
   };
 
   const breadcrumbRender = (routers = []) => {
     if (breadcrumbHome) {
+      /* 添加主页面包屑 */
       routers.unshift({
         path: breadcrumbHome.path,
         breadcrumbName: breadcrumbHome.name || defaultHome,
       });
     }
-    console.log(`${JSON.stringify(routers)}`);
     return routers;
   };
 
-  const pageHeaderRender = props => {
-    const routes = [
-      {
-        path: 'dashboard',
-        breadcrumbName: 'dashboard',
-      },
-      {
-        path: 'workplace',
-        breadcrumbName: 'workplace',
-      },
-    ];
-
-    function itemRender(route, params, routes, paths) {
-      console.log(`1 ${JSON.stringify(route)}`);
-      // console.log(`${JSON.stringify(params)}`);
-      console.log(`2 ${JSON.stringify(routes)}`);
-      console.log(`3 ${JSON.stringify(paths)}`);
-      const last = routes.indexOf(route) === routes.length - 1;
-      // return last ? (
-      //   <span>{route.breadcrumbName}</span>
-      // ) : (
-      //   <Link to={route.path}>{route.breadcrumbName}</Link>
-      // );
-      if (route && route.path && route.path.startsWith('/')) {
-        return <Link to={route.path}>{route.breadcrumbName}</Link>;
-      }
-
-      return <Link to={`/${paths.join('/')}`}>{route.breadcrumbName}</Link>;
+  const itemRender = (route, params, routes, paths) => {
+    const first = routes.indexOf(route) === 0;
+    if (breadcrumbHome && first) {
+      const to = route.path.startsWith('/') ? route.path : `/${route.path}`;
+      return <Link to={to}>{route.breadcrumbName}</Link>;
     }
-
-    return (
-      <Fragment>
-        {/* <Breadcrumb itemRender={itemRender} routes={routes}> */}
-        {/*  <Breadcrumb.Item> */}
-        {/*    <Icon type="home" /> */}
-        {/*  </Breadcrumb.Item> */}
-        {/*  <Breadcrumb.Item> */}
-        {/*    <Icon type="user" /> */}
-        {/*    <span>Application List</span> */}
-        {/*  </Breadcrumb.Item> */}
-        {/*  <Breadcrumb.Item>Application</Breadcrumb.Item> */}
-        {/* </Breadcrumb> */}
-      </Fragment>
-    );
+    return <span>{route.breadcrumbName}</span>;
   };
 
   return (
@@ -177,21 +141,9 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       footerRender={footerRender}
       menuDataRender={menuDataRender}
       menuItemRender={menuItemRender}
-      // breadcrumbRender={breadcrumbRender}
+      breadcrumbRender={breadcrumbRender}
       // // pageTitleRender={pageTitleRender}
-      // itemRender={(route, params, routes, paths) => {
-      //   const first = routes.indexOf(route) === 0;
-      //   // console.log(`1 => ${JSON.stringify(paths)}`);
-      //   // console.log(`2 => ${JSON.stringify(paths.join('/'))}`);
-      //   // return first ? (
-      //   //   <Link to={paths.join('/')}>{route.breadcrumbName}</Link>
-      //   // ) : (
-      //   //   <span>{route.breadcrumbName}AA</span>
-      //   // );
-      //   return <Link to={paths.join('/')}>{route.breadcrumbName}</Link>;
-      //   // return <Link>{route.breadcrumbName}</Link>;
-      //   // return first && breadcrumbHome ? breadcrumbHome : route.breadcrumbName;
-      // }}
+      itemRender={itemRender}
       formatMessage={formatMessage}
       {...props}
       {...settings}

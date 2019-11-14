@@ -9,10 +9,9 @@ import {
   ResponseError,
   ResponseInterceptor,
 } from 'umi-request';
-import { formatMessage } from 'umi-plugin-react/locale';
+import { formatMessage, getLocale } from 'umi-plugin-react/locale';
 import hash from 'object-hash';
-import { useContext } from 'react';
-import { RouteContext } from '@ant-design/pro-layout';
+
 import { BizError, errorKey, Exception } from '@/utils/error';
 // TODO: 2019/11/5 15:49 国际化
 const codeMessage = {
@@ -68,7 +67,7 @@ const errorHandler = (error: ResponseError): void => {
     throw new BizError({ ...exception, key: errorKey(exception) });
   }
 };
-
+// const selectedLang = getLocale();
 /**
  * 配置request请求时的默认参数
  */
@@ -80,6 +79,7 @@ const request = extend({
   // },
   /* API 前缀 */
   // prefix: 'http://yapi.demo.qunar.com/mock/811/api',
+  params: { lang: () => getLocale() },
   /* 默认请求是否带上cookie */
   credentials: 'include',
   // getResponse: true,
@@ -100,6 +100,7 @@ const requestInterceptor: RequestInterceptor = (url: string, options: RequestOpt
     const { headers } = options;
     headers['x-auth-token'] = mergeToken;
   }
+  console.log(`请求参数 => ${JSON.stringify(options)}`);
   return { url: newUrl, options };
 };
 
@@ -113,15 +114,13 @@ const responseInterceptor: ResponseInterceptor = async (
   options: RequestOptionsInit,
 ) => {
   /* 1.用户登陆后存储 TOKEN  */
-  // TODO: 2019/11/13 16:13 为提供性能，考虑迁移代码至登陆完成后的逻辑中
   const { url } = response;
-  console.log(`url =====> ${url}`);
-  // const personal = useContext(RouteContext);
+
   const loginReg = new RegExp('.*/api/menu.*');
   if (loginReg.test(url)) {
+    console.log(`拦截登录处理 =====> ${url}`);
     const { headers } = response;
     const token = headers.get('x-auth-token');
-    console.log(token);
     if (token) {
       localStorage.setItem('x-auth-token', token);
     }

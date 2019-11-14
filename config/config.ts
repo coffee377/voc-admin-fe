@@ -72,8 +72,8 @@ const config: IConfig = {
     models: resolve(__dirname, 'src/models'),
     // routes: resolve(__dirname, './src/routes'),
     services: resolve(__dirname, 'src/services'),
-    // themes: resolve(__dirname, './src/themes'),
     utils: resolve(__dirname, 'src/utils'),
+    tests: resolve(__dirname, 'tests'),
   },
   /* https://webpack.js.org/configuration/dev-server/#devserver-proxy */
   proxy,
