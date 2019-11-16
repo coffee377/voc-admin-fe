@@ -1,10 +1,8 @@
-English | [简体中文](./README.zh-CN.md) [CHANGE LOG](./CHANGELOG.zh-CN.md)
+English | [简体中文](README.zh-CN.md) [CHANGE LOG](CHANGELOG.zh-CN.md)
 
-# voc-admin-fe
+# voc-admin-ui
 
----
-
-管理系统-前端
+管理系统-UI
 
 ## 使用
 

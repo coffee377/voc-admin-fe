@@ -1,12 +1,16 @@
-English | [简体中文](./README.zh-CN.md) [CHANGE LOG](./CHANGELOG.en-US.md)
+English | [简体中文](README.zh-CN.md) [CHANGE LOG](CHANGELOG.en-US.md)
 
-# voc-admin-fe
+# voc-admin-ui
 
----
-
-管理系统-前端
+管理系统-UI
 
 ## Usage
+
+```bash
+npm run start
+// or
+yarn run start
+```
 
 ## Demo
 

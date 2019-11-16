@@ -5,6 +5,10 @@
   "license": "MIT",
   "scripts": {
     "start": "umi dev",
+    "lib": "father build",
+    "doc": "father doc dev",
+    "doc:build": "father doc build",
+    "doc:deploy": "father doc build",
     "build": "umi build",
     "test": "umi test --coverage",
     "lint:es": "eslint --ext .js src mock tests",
