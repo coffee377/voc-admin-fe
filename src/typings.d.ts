@@ -4,6 +4,7 @@ import { CSSProperties } from 'react';
 import Link from '@/components/Link';
 
 declare module '*.css';
+declare module '*.less';
 declare module '*.png';
 declare module '*.ico';
 

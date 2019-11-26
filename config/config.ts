@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import { IConfig, IPlugin } from 'umi-types';
 import { resolve } from 'path';
+import slash from 'slash';
 import routes from './routes';
 import proxy from './apiProxy';
 
@@ -53,12 +54,42 @@ const { NODE_ENV } = process.env;
 /* 是否开发模式 */
 const developmentMode = NODE_ENV !== 'production';
 
+const getLocalIdentName = (context: any, localIdentName: string, localName: string, options) => {
+  if (
+    context.resourcePath.includes('node_modules') ||
+    context.resourcePath.includes('ant.design.pro.less') ||
+    context.resourcePath.includes('global.less') ||
+    context.resourcePath.includes('layout.less')
+  ) {
+    return localName;
+  }
+  const match = context.resourcePath.match(/src(.*)/);
+
+  if (match && match[1]) {
+    const antdProPath = match[1].replace('.less', '');
+    const arr = slash(antdProPath)
+      .split('/')
+      .map((a: string) => a.replace(/([A-Z])/g, '-$1'))
+      .map((a: string) => a.toLowerCase());
+    return `antd-pro${arr.join('-')}-${localName}`.replace(/--/g, '-');
+  }
+  return localName;
+};
+
 /* ref: https://umijs.org/config/ */
 const config: IConfig = {
   treeShaking: true,
   exportStatic: false,
   plugins,
   routes,
+  /* https://github.com/webpack-contrib/css-loader */
+  cssLoaderOptions: {
+    modules: true,
+    getLocalIdent: getLocalIdentName,
+  },
+  lessLoaderOptions: {
+    javascriptEnabled: true,
+  },
   /* 定义环境变量 */
   define: {},
   devtool: developmentMode ? 'source-map' : false,

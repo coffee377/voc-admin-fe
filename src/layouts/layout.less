@@ -1,0 +1,41 @@
+@import '../global.less';
+
+:global {
+  .@{ui-grid} {
+    &-wrap {
+      .@{ui-grid}-container {
+        border: 1px #9c3b43 dashed;
+        padding: 20px 100px;
+        grid-template-rows: repeat(8, 1fr);
+        grid-template-columns: [c1] 3fr [c2] 4fr [c3] 3fr;
+        grid-auto-flow: column; // 先列后行
+      }
+
+      .@{ui-grid}-item {
+        border: solid #0b5d9c 1px;
+        height: 100%;
+        border-radius: 8px;
+        padding: 5px;
+        //place-self: center stretch;
+      }
+
+      .@{ui-grid}-item1,
+      .@{ui-grid}-item5 {
+        grid-row: 1 / span 4;
+      }
+
+      .@{ui-grid}-item2,
+      .@{ui-grid}-item6 {
+        grid-row: 5 / span 4;
+      }
+
+      .@{ui-grid}-item3 {
+        grid-row: 1 / span 5;
+      }
+
+      .@{ui-grid}-item4 {
+        grid-row: 6 / span 3;
+      }
+    }
+  }
+}

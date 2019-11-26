@@ -1,0 +1,36 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+// css grid 布局
+@ui-grid: ~'ui-grid';
+@ui-grid-gap-row: 30px;
+@ui-grid-gap-col: 30px;
+
+.@{ui-grid} {
+  &-wrap {
+    .@{ui-grid}-container {
+
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: @ui-grid-gap-row @ui-grid-gap-col; //行间距 列间距
+      grid-auto-flow: row; // 先列后行
+    }
+
+    .@{ui-grid}-header,
+    .@{ui-grid}-footer {
+      text-align: center;
+    }
+
+    .@{ui-grid}-item {
+      text-align: center;
+      height: 100%;
+    }
+  }
+}

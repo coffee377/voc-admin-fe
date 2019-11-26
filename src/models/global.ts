@@ -8,7 +8,7 @@ export interface GlobalModelType extends Model {
 }
 
 const GlobalModel: GlobalModelType = {
-  namespace: 'global',
+  namespace: 'global.less',
   state: {},
   reducers: {},
 };
