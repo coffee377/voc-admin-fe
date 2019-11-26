@@ -59,3 +59,10 @@ export interface VocConfig {
 }
 
 export declare type WithFalse<T> = T | false;
+
+export type Func = (...args: any[]) => any;
+
+/* EChars 事件 */
+export interface EchartsEvent {
+  [key: string]: Func;
+}
