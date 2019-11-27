@@ -7,9 +7,11 @@ import styles from './index.less';
 import CSSGridLayout from '@/layouts/DemonLayout';
 import { CodePreview } from '@/components';
 import DemonLayout from '@/layouts/DemonLayout';
+import { EchartsEvent } from '@/typings';
 
 interface IndexProps {
   dispatch: Dispatch<any>;
+  events?: EchartsEvent;
 }
 
 // @connect()

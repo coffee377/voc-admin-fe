@@ -19,8 +19,8 @@ export interface DispatchProps<A extends Action = AnyAction> {
  * 组件通用样式属性
  */
 export interface StyleProps {
-  style: CSSProperties;
-  className: string;
+  style?: CSSProperties;
+  className?: string;
 }
 
 export interface VocConfig {
