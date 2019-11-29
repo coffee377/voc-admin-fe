@@ -40,12 +40,30 @@ DemonLayout.defaultProps = {
   item3: (
     <Geo
       style={{ height: '385px' }}
-      option={{ geo: { zoom: 1.2, scaleLimit: { min: 1.2, max: 3 } } }}
       aspectScale={1}
+      // carouselCallback={name => {
+      //   console.log(name);
+      // }}
+      // carousel={false}
+      // carouselNamesRank={['市本级', '巢湖市', '肥东县', '肥西县', '长丰县', '庐江县']}
+      // carouselStart={3}
+      option={{ title: { text: '地图测试' }, geo: { zoom: 1.2, scaleLimit: { min: 1.2, max: 3 } } }}
     />
   ),
   item4: <Gauge style={{ height: '215px' }} />,
-  item5: <Pie />,
+  item5: (
+    <Pie
+      dataset={[
+        { name: '直接访问', value: 335 },
+        { name: '邮件营销', value: 310 },
+        { name: '联盟广告', value: 234 },
+        { name: '视频广告', value: 135 },
+        { name: '搜索引擎', value: 1548 },
+      ]}
+      // roseType={false}
+      radius={['50%','75%']}
+    />
+  ),
   item6: <Radar />,
 };
 export default DemonLayout;

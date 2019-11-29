@@ -1,60 +1,99 @@
 import ReactEcharts from 'echarts-for-react';
 import React from 'react';
-import { EChartsProps } from '@/components/Echarts/echats';
+import { StyleProps } from '@/typings';
+import { mixin } from '@/utils/merge';
 
-export interface BarProps extends Partial<EChartsProps> {
-  // option?: any;
+export interface NameValue {
+  name: string;
+  value: number;
 }
 
-const option5 = {
-  tooltip: {
-    trigger: 'item',
-    formatter: '{a} <br/>{b}: {c} ({d}%)',
-  },
-  legend: {
-    // orient: 'vertical',
-    // x: 'left',
-    y: 'bottom',
-    type: 'scroll',
-    data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎'],
-  },
-  series: [
-    {
-      name: '访问来源',
-      type: 'pie',
-      radius: ['50%', '70%'],
-      avoidLabelOverlap: false,
-      label: {
-        normal: {
-          show: false,
-          position: 'center',
-        },
-        emphasis: {
-          show: true,
-          textStyle: {
-            fontSize: '30',
-            fontWeight: 'bold',
+export interface BarProps extends StyleProps {
+  /**
+   * 数据集
+   */
+  dataset?: NameValue[];
+  /**
+   * 饼图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标。
+   * @see https://www.echartsjs.com/zh/option.html#series-pie.center
+   */
+  center?: Array<string | number>;
+  /**
+   * 饼图的半径
+   * @see https://www.echartsjs.com/zh/option.html#series-pie.radius
+   */
+  radius?: number | string | Array<number | string>;
+  /**
+   * 显示加载动画
+   */
+  loading?: boolean;
+  /**
+   * echarts 配置
+   */
+  option?: object;
+  /**
+   * 是否展示成南丁格尔图，通过半径区分数据大小
+   */
+  roseType?: boolean | 'radius' | 'area';
+}
+
+const Pie: React.FC<BarProps> = props => {
+  const { dataset, center, radius, loading, roseType, option, style, className } = props;
+  const getOption = () => {
+    const innerOption = {
+      dataset: {
+        source: dataset,
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/> {b} {c} ({d}%)',
+      },
+      legend: {
+        type: 'scroll',
+        // orient: 'vertical',
+        // x: 'left',
+        y: 'bottom',
+      },
+
+      series: [
+        {
+          name: '访问来源',
+          type: 'pie',
+          roseType,
+          label: {
+            show: true,
+            // position: 'center',
           },
+          labelLine: {
+            show: true,
+          },
+          emphasis: {
+            label: {
+              show: true,
+              textStyle: {
+                // fontSize: '30',
+                // fontWeight: 'bold',
+              },
+            },
+          },
+          center: center || ['50%', '50%'],
+          radius: radius || [0, '75%'],
         },
-      },
-      labelLine: {
-        normal: {
-          show: false,
-        },
-      },
-      data: [
-        { value: 335, name: '直接访问' },
-        { value: 310, name: '邮件营销' },
-        { value: 234, name: '联盟广告' },
-        { value: 135, name: '视频广告' },
-        { value: 1548, name: '搜索引擎' },
       ],
-    },
-  ],
+    };
+
+    return mixin(innerOption, option);
+  };
+
+  return (
+    <ReactEcharts option={getOption()} showLoading={loading} style={style} className={className} />
+  );
 };
 
-const Pie: React.FC<BarProps> = props => <ReactEcharts option={option5} {...props} />;
-
-Pie.defaultProps = {};
+Pie.defaultProps = {
+  dataset: [],
+  loading: false,
+  roseType: false,
+};
 
 export default Pie;

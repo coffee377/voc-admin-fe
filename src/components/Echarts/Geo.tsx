@@ -2,26 +2,33 @@ import ReactEcharts from 'echarts-for-react';
 import React, { Fragment } from 'react';
 import echarts from 'echarts';
 import { HeFei } from './map/3401';
-import { EchartsEvent, StyleProps } from '@/typings';
-import { ReactEchartsAPI } from '@/components/Echarts/echats';
-// import merge from 'merge';
+import { StyleProps } from '@/typings';
+import { EventMap } from '@/components/Echarts';
+import { mixin } from '@/utils/merge';
+
 export interface MapProps {
-  mapName: string;
   geoJson: object;
+  mapName: string;
   specialAreas?: object;
 }
-// echarts.registerMap('3401', HeFei);
+
 export interface GeoProps extends StyleProps {
-  aspectScale?: number;
+  /**
+   * 显示加载动画
+   */
+  loading?: boolean;
+  /**
+   * 注册地图配置
+   */
   mapProps?: MapProps;
-  // events?: EchartsEvent;
-  option?: any;
-  callback?: (instance: echarts.ECharts) => void;
-  // echartsReact?: any;
-  // echartsInstance?: echarts.ECharts;
-  // 地图切换时的回调函数
-  switchCallback?: (name: string) => void;
-  name?: string[];
+  /**
+   * 地图显示长宽比
+   */
+  aspectScale?: number;
+  /**
+   * echarts 配置
+   */
+  option?: object;
   /**
    * 是否轮播
    */
@@ -31,174 +38,20 @@ export interface GeoProps extends StyleProps {
    */
   carouselInterval?: number;
   /**
-   * 是否暂停轮播
+   * 自定义乱播名称排序
    */
-  pause?: boolean;
+  carouselNamesRank?: string[];
+  /**
+   * 轮播开始项，地区名称或位置索引，从0开始
+   */
+  carouselStart?: string | number;
+  /**
+   * 地图切换后调函数
+   * @param name 地区名称
+   */
+  carouselCallback?: (name: string) => void;
 }
 
-// export interface GeoState {
-//   pause: boolean;
-//   current: number;
-// }
-
-// const option3 = {
-//   // backgroundColor: '#404a59',
-//   title: {
-//     // text: '香港18区人口密度 （2011）',
-//   },
-//   tooltip: {
-//     trigger: 'item',
-//   },
-//   legend: {
-//     orient: 'vertical',
-//     top: 'bottom',
-//     left: 'right',
-//     // data: ['基金收入', '基金支出'],
-//     // textStyle: {
-//     // color: '#fff',
-//     // },
-//   },
-//
-//   // visualMap: {
-//   //   min: 100,
-//   //   max: 1000,
-//   //   // splitNumber: 5,
-//   //   // text: ['High', 'Low'],
-//   //   calculable: true,
-//   //   inRange: {
-//   //     color: ['#50a3ba', '#eac736', '#d94e5d'],
-//   //     // symbolSize: [10],
-//   //   },
-//   //   selectedMode: 'single',
-//   //   textStyle: {
-//   //     color: '#fff',
-//   //   },
-//   // },
-//   geo: {
-//     roam: true,
-//     aspectScale: 1,
-//     zoom: 1.2,
-//     scaleLimit: {
-//       min: 1.2,
-//       max: 3,
-//     },
-//     nameMap: {},
-//     selectedMode: 'single',
-//     // selectedMode: 'multiple',
-//     label: {
-//       show: true,
-//       // color: '#fff',
-//     },
-//     itemStyle: {
-//       borderType: 'dotted',
-//       // areaColor: '#323c48',
-//     },
-//     emphasis: {
-//       label: {
-//         show: true,
-//         // color: '#9c3b43',
-//       },
-//       itemStyle: {
-//         borderType: 'dotted',
-//         areaColor: '#bfbfbf',
-//       },
-//     },
-//     // regions: [{ name: '肥西县', selected: true }],
-//   },
-//   // series: [
-//   //   //   {
-//   //   //     name: '基金收入',
-//   //   //     type: 'scatter',
-//   //   //     coordinateSystem: 'geo',
-//   //   //     geoIndex: 0,
-//   //   //     hoverAnimation: true,
-//   //   //     // symbol: 'pin',
-//   //   //     data: [
-//   //   //       { name: '长丰县', value: [117.167564, 32.478018, 100] },
-//   //   //       { name: '肥东县', value: [117.469383, 31.88794, 200] },
-//   //   //       { name: '肥西县', value: [117.157981, 31.70681, 300] },
-//   //   //       { name: '庐江县', value: [117.2878, 31.25555, 400] },
-//   //   //       { name: '巢湖市', value: [117.8618, 31.598628, 600] },
-//   //   //       { name: '市本级', value: [117.227308, 31.82057, 800] },
-//   //   //     ],
-//   //   //     tooltip: {
-//   //   //       formatter(params: any) {
-//   //   //         return `${params.name}</br>${params.seriesName}: ${params.value[2]}`;
-//   //   //       },
-//   //   //     },
-//   //   //   },
-//   //   //   {
-//   //   //     name: '基金支出',
-//   //   //     type: 'scatter',
-//   //   //     coordinateSystem: 'geo',
-//   //   //     geoIndex: 0,
-//   //   //     hoverAnimation: true,
-//   //   //     symbol: 'pin',
-//   //   //     symbolOffset: [10, 10],
-//   //   //     data: [
-//   //   //       { name: '长丰县', value: [117.167564, 32.478018, 100] },
-//   //   //       { name: '肥东县', value: [117.469383, 31.88794, 200] },
-//   //   //       { name: '肥西县', value: [117.157981, 31.70681, 300] },
-//   //   //       { name: '庐江县', value: [117.2878, 31.25555, 400] },
-//   //   //       { name: '巢湖市', value: [117.8618, 31.598628, 600] },
-//   //   //       { name: '市本级', value: [117.227308, 31.82057, 800] },
-//   //   //     ],
-//   //   //     tooltip: {
-//   //   //       formatter(params: any) {
-//   //   //         return `${params.name}</br>${params.seriesName}: ${params.value[2]}`;
-//   //   //       },
-//   //   //     },
-//   //   //   },
-//   //   // ],
-// };
-// const Geo: React.FC<GeoProps> = props => {
-//   // let echarts_react = null;
-//   const { mapProps } = props;
-//   const mapName = mapProps.mapName;
-//
-//   /* 注册地图 */
-//   if (mapProps) {
-//     echarts.registerMap(mapProps.mapName, HeFei, mapProps.specialAreas);
-//   }
-//
-//   const ops = { ...option3, ...props.option };
-//   const geo = { ...ops.geo, map: mapName };
-//
-//   // let echarts_instance = echarts_react.getEchartsInstance;
-//   // console.log(echarts_react);
-//   const clickBtn = () => {
-//     console.log(props.echartsReact);
-//     console.log(props.echartsReact.getEchartsInstance().getDataURL());
-//   };
-//
-//   return (
-//     <div>
-//       <ReactEcharts
-//         ref={(e: any) => {
-//           props.echartsReact = e;
-//         }}
-//         option={{ ...ops, geo }}
-//         onEvents={mapEvents}
-//         className={props.className}
-//         style={props.style}
-//       />
-//       <div>
-//         <button className="a_line" onClick={clickBtn}>
-//           click here to get the DataURL of chart.
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-//
-// Geo.defaultProps = {
-//   mapProps: {
-//     mapName: '3401',
-//     geoJson: HeFei,
-//   },
-//   // callback: e => {e.dispatchAction()},
-// };
-//
 class Geo extends React.PureComponent<GeoProps> {
   // echarts 实例
   private echartsInstance = null;
@@ -206,92 +59,154 @@ class Geo extends React.PureComponent<GeoProps> {
   // 计时器
   private timeTicket = null;
 
-  private selectedIndex: number = 0;
+  private selectedIndex: string | number;
 
-  private pause: boolean = false;
+  // 是否暂停轮播
+  private carousePause: boolean = false;
 
+  // 地图注册事件
+  private mapEvents: EventMap = {
+    dblclick: () => {
+      this.toggleAutoSwitch();
+    },
+    mouseover: () => {
+      const { carousel } = this.props;
+      if (carousel && !this.carousePause) {
+        // console.log('进入');
+        this.removeAutoSwitch();
+      }
+    },
+    mouseout: () => {
+      const { carousel } = this.props;
+      if (carousel && !this.carousePause) {
+        // console.log('退出');
+        this.addAutoSwitch();
+      }
+    },
+    // 开启轮播触发
+    geoselected: (params: any) => {
+      this.switchCallback(params);
+    },
+    // 鼠标点击触发
+    geoselectchanged: (params: any) => {
+      this.switchCallback(params);
+    },
+  };
+
+  // 默认属性
   static defaultProps = {
-    aspectScale: 0.75,
-    carousel: true,
-    carouselInterval: 2,
-    // names:HeFei.features.
     mapProps: {
       mapName: '3401',
       geoJson: HeFei,
     },
+    aspectScale: 0.75,
+    carousel: true,
+    carouselInterval: 5,
   };
 
-
-
-
-  mapEvents: EchartsEvent = {
-    click: (params: any) => {
-      const areaName = params.name;
-      console.log(areaName);
-      // console.log(next);
-      // if (carousel) {
-      // @ts-ignore
-      // this.fetchDataByArea(areaName);
-    },
-    dblclick: (params: any) => {
-      // console.log('双击事件 => ');
-      console.log(params);
-      this.togglePause();
-    },
-    mouseover: (params: any) => {
-      if (!this.pause) {
-        // console.log(`进入 => ${params.name}`);
-        this.clearTimeTicket();
-      }
-    },
-    mouseout: (params: any) => {
-      if (!this.pause) {
-        // console.log(`移出 => ${params.name}`);
-        this.addTimeTicket();
-      }
-    },
+  // 地图切换后回调函数
+  switchCallback = (params: any) => {
+    const { carouselCallback } = this.props;
+    if (carouselCallback) {
+      carouselCallback(params.name || params.batch[0].name || '');
+    }
   };
 
-  addTimeTicket = () => {
-    this.timeTicket = setInterval(() => {
-      const names = ['长丰县', '肥东县', '肥西县', '庐江县', '巢湖市', '市本级'];
+  // 选中地图区域
+  selectArea = (name: string) => {
+    if (this.echartsInstance) {
       this.echartsInstance.dispatchAction({
         type: 'geoSelect',
-        name: names[this.selectedIndex],
+        name,
       });
-      this.selectedIndex = (this.selectedIndex + 1) % 6;
-    }, this.props.carouselInterval * 1000);
-  };
-
-  clearTimeTicket = () => {
-    if (this.timeTicket) {
-      clearInterval(this.timeTicket);
-      this.timeTicket = null;
     }
   };
 
-  togglePause = () => {
-    if (this.timeTicket) {
-      this.clearTimeTicket();
-    } else {
-      this.addTimeTicket();
+  // 获取地区轮播排序名称
+  getAreaNames = () => {
+    const { carouselNamesRank, mapProps } = this.props;
+    if (carouselNamesRank && carouselNamesRank.length > 0) {
+      return carouselNamesRank;
     }
-    this.pause = !this.pause;
-    // console.log(this.pause);
+    return Array.from(mapProps.geoJson['features'], v => {
+      return v['properties']['name'];
+    });
+  };
+
+  // 获取开始选中地区
+  getStartAreaName = () => {
+    const names = this.getAreaNames();
+    const { carouselStart } = this.props;
+
+    if (typeof carouselStart == 'string') {
+      const i = names.findIndex(value => {
+        return value == carouselStart;
+      });
+      if (i >= 0) {
+        this.selectedIndex = i;
+        return carouselStart;
+      }
+    }
+
+    if (carouselStart >= 0 && carouselStart < names.length) {
+      this.selectedIndex = carouselStart;
+      return names[carouselStart];
+    }
+    this.selectedIndex = 0;
+    return names[0];
+  };
+
+  // 自动切换
+  addAutoSwitch = () => {
+    const { carouselInterval } = this.props;
+    if (!this.timeTicket) {
+      this.timeTicket = setInterval(() => {
+        const names = this.getAreaNames();
+        this.selectArea(names[this.selectedIndex]);
+        this.selectedIndex = (this.selectedIndex + 1) % names.length;
+      }, carouselInterval * 1000);
+    }
+  };
+
+  // 移除自动切换
+  removeAutoSwitch = () => {
+    clearInterval(this.timeTicket);
+    this.timeTicket = null;
+  };
+
+  toggleAutoSwitch = () => {
+    const { carousel } = this.props;
+    if (carousel) {
+      this.carousePause = !this.carousePause;
+      if (this.carousePause) {
+        this.removeAutoSwitch();
+      } else {
+        this.addAutoSwitch();
+      }
+    }
   };
 
   componentDidMount(): void {
-    this.clearTimeTicket();
-    this.addTimeTicket();
+    const { carousel } = this.props;
+    if (carousel) {
+      // 轮播开启时选中开始项
+      this.selectArea(this.getStartAreaName());
+
+      // 自动切换
+      this.addAutoSwitch();
+    }
   }
 
   componentWillUnmount(): void {
-    this.clearTimeTicket();
+    const { carousel } = this.props;
+    if (carousel) {
+      this.removeAutoSwitch();
+    }
   }
 
   getOption = () => {
     const { aspectScale, mapProps, option } = this.props;
-    const r = {
+    const innerOption = {
       tooltip: {
         trigger: 'item',
       },
@@ -304,11 +219,6 @@ class Geo extends React.PureComponent<GeoProps> {
         roam: true,
         map: mapProps.mapName,
         aspectScale,
-        zoom: 1.2,
-        scaleLimit: {
-          min: 1.2,
-          max: 3,
-        },
         nameMap: {},
         selectedMode: 'single', // multiple
         label: {
@@ -328,11 +238,8 @@ class Geo extends React.PureComponent<GeoProps> {
         },
       },
     };
-    // console.log(r);
-    // console.log(option);
-    // const c = merge(r, option);
-    // console.log(c);
-    return r;
+    // 合并配置
+    return mixin(innerOption, option);
   };
 
   render(): React.ReactNode {
@@ -340,19 +247,18 @@ class Geo extends React.PureComponent<GeoProps> {
 
     /* 注册地图 */
     if (this.props.mapProps) {
-      echarts.registerMap(mapProps.mapName, HeFei, mapProps.specialAreas);
+      echarts.registerMap(mapProps.mapName, mapProps.geoJson, mapProps.specialAreas);
     }
 
-    // const ops = { ...option3, ...this.props.option };
-    // const geo = { ...ops.geo, map: mapName };
     return (
       <Fragment>
         <ReactEcharts
-          ref={(e: ReactEchartsAPI) => {
+          ref={(e: any) => {
             if (e && e.getEchartsInstance) {
               this.echartsInstance = e.getEchartsInstance();
             }
           }}
+          showLoading={this.props.loading}
           option={this.getOption()}
           onEvents={this.mapEvents}
           className={this.props.className}
