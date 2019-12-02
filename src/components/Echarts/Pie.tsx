@@ -1,6 +1,6 @@
 import ReactEcharts from 'echarts-for-react';
 import React from 'react';
-import { StyleProps } from '@/typings';
+import { StyleProps, WithFalse } from '@/typings';
 import { mixin } from '@/utils/merge';
 
 export interface NameValue {
@@ -24,6 +24,18 @@ export interface BarProps extends StyleProps {
    */
   radius?: number | string | Array<number | string>;
   /**
+   * 是否展示成南丁格尔图，通过半径区分数据大小
+   */
+  roseType?: boolean | 'radius' | 'area';
+  /**
+   * 标题
+   */
+  title?: WithFalse<string>;
+  /**
+   * 是否显示图例
+   */
+  showLegend?: boolean;
+  /**
    * 显示加载动画
    */
   loading?: boolean;
@@ -32,37 +44,41 @@ export interface BarProps extends StyleProps {
    */
   option?: object;
   /**
-   * 是否展示成南丁格尔图，通过半径区分数据大小
+   * 主题
    */
-  roseType?: boolean | 'radius' | 'area';
+  theme?: object | string;
 }
 
 const Pie: React.FC<BarProps> = props => {
-  const { dataset, center, radius, loading, roseType, option, style, className } = props;
+  const { loading, theme, style, className } = props;
   const getOption = () => {
+    const { title, dataset, showLegend, center, radius, roseType, option } = props;
+
     const innerOption = {
+      title: {
+        show: title,
+        text: title,
+      },
       dataset: {
         source: dataset,
       },
       tooltip: {
         trigger: 'item',
-        formatter: '{a} <br/> {b} {c} ({d}%)',
+        formatter: (params: any) => `${params.name}: ${params.data.value} (${params.percent}%)`,
       },
       legend: {
+        show: showLegend,
         type: 'scroll',
-        // orient: 'vertical',
-        // x: 'left',
+        x: 'center',
         y: 'bottom',
       },
 
       series: [
         {
-          name: '访问来源',
           type: 'pie',
           roseType,
           label: {
             show: true,
-            // position: 'center',
           },
           labelLine: {
             show: true,
@@ -70,14 +86,11 @@ const Pie: React.FC<BarProps> = props => {
           emphasis: {
             label: {
               show: true,
-              textStyle: {
-                // fontSize: '30',
-                // fontWeight: 'bold',
-              },
+              textStyle: {},
             },
           },
-          center: center || ['50%', '50%'],
-          radius: radius || [0, '75%'],
+          center,
+          radius,
         },
       ],
     };
@@ -86,11 +99,20 @@ const Pie: React.FC<BarProps> = props => {
   };
 
   return (
-    <ReactEcharts option={getOption()} showLoading={loading} style={style} className={className} />
+    <ReactEcharts
+      option={getOption()}
+      showLoading={loading}
+      style={style}
+      className={className}
+      theme={theme}
+    />
   );
 };
 
 Pie.defaultProps = {
+  center: ['50%', '50%'],
+  radius: [0, '75%'],
+  showLegend: true,
   dataset: [],
   loading: false,
   roseType: false,

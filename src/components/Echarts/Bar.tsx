@@ -1,8 +1,8 @@
 import ReactEcharts from 'echarts-for-react';
 import React from 'react';
-import { EChartsProps } from '@/components/Echarts/echats';
+import { StyleProps } from '@/typings';
 
-export interface BarProps extends Partial<EChartsProps> {
+export interface BarProps extends StyleProps {
   // option?: any;
 }
 

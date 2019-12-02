@@ -1,58 +1,146 @@
 import ReactEcharts from 'echarts-for-react';
 import React from 'react';
-import { EChartsProps } from '@/components/Echarts/echats';
+import { StyleProps, WithFalse } from '@/typings';
+import { mixin } from '@/utils/merge';
 
-export interface BarProps extends Partial<EChartsProps> {
-  // option?: any;
+/**
+ * 雷达图指示器
+ */
+export interface RadarIndicate {
+  name: string;
+  max?: number;
+  min?: number;
+  color?: string;
 }
 
-const option6 = {
-  title: {
-    text: '雷达图',
-  },
-  tooltip: {
-    trigger: 'axis',
-  },
-  legend: {
-    x: 'center',
-    y: 'bottom',
-    type: 'scroll',
-    data: ['降水量', '蒸发量'],
-  },
-  radar: [
-    {
-      indicator: (function() {
-        const res = [];
-        for (let i = 1; i <= 12; i++) {
-          res.push({ text: `${i}月`, max: 100 });
-        }
-        return res;
-      }()),
-      center: ['50%', '48%'],
-      radius: 95,
-    },
-  ],
-  series: [
-    {
-      type: 'radar',
-      // radarIndex: 2,
-      itemStyle: { normal: { areaStyle: { type: 'default' } } },
-      data: [
+/**
+ * 雷达图数据
+ */
+export interface RadarData {
+  name: string;
+  value: number;
+}
+
+export interface RadarProps extends StyleProps {
+  /**
+   * 雷达图的中心（圆心）坐标，数组的第一项是横坐标，第二项是纵坐标。
+   * @see https://www.echartsjs.com/zh/option.html#radar.center
+   */
+  center?: Array<string | number>;
+  /**
+   * 雷达图半径
+   * @see https://www.echartsjs.com/zh/option.html#radar.radius
+   */
+  radius?: number | string | Array<number | string>;
+  /**
+   * 指示器轴的分割段数
+   * @see https://www.echartsjs.com/zh/option.html#radar.splitNumber
+   */
+  splitNumber?: number;
+  /**
+   * 雷达图绘制类型
+   * @see https://www.echartsjs.com/zh/option.html#radar.shape
+   */
+  shape?: 'polygon' | 'circle' | string;
+  /**
+   * 雷达图的指示器，用来指定雷达图中的多个变量（维度）
+   * @see https://www.echartsjs.com/zh/option.html#radar.shape
+   */
+  indicator?: RadarIndicate[];
+  /**
+   * 数据集
+   */
+  dataset?: { name: string; value: number[] }[];
+  /**
+   * 标题
+   */
+  title?: WithFalse<string>;
+  /**
+   * 是否显示图例
+   */
+  showLegend?: boolean;
+  /**
+   * 显示加载动画
+   */
+  loading?: boolean;
+  /**
+   * echarts 配置
+   */
+  option?: object;
+  /**
+   * 主题
+   */
+  theme?: object | string;
+}
+
+const Radar: React.FC<RadarProps> = props => {
+  const { loading, theme, style, className } = props;
+  const getOption = () => {
+    const {
+      title,
+      splitNumber,
+      shape,
+      indicator,
+      center,
+      radius,
+      showLegend,
+      dataset,
+      option,
+    } = props;
+    const innerOption = {
+      title: {
+        show: title,
+        text: title,
+      },
+      tooltip: {
+        trigger: 'axis',
+      },
+      legend: {
+        show: showLegend,
+        type: 'scroll',
+        x: 'center',
+        y: 'bottom',
+      },
+      radar: [
         {
-          name: '降水量',
-          value: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 75.6, 82.2, 48.7, 18.8, 6.0, 2.3],
-        },
-        {
-          name: '蒸发量',
-          value: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 35.6, 62.2, 32.6, 20.0, 6.4, 3.3],
+          splitNumber,
+          shape,
+          indicator,
+          center,
+          radius,
         },
       ],
-    },
-  ],
+      series: [
+        {
+          type: 'radar',
+          radarIndex: 0,
+          label: { show: false },
+          areaStyle: { type: 'default', opacity: 0.7 },
+          symbol: 'none',
+          data: dataset,
+        },
+      ],
+    };
+
+    return mixin(innerOption, option);
+  };
+  return (
+    <ReactEcharts
+      option={getOption()}
+      showLoading={loading}
+      theme={theme}
+      style={style}
+      className={className}
+    />
+  );
 };
 
-const Radar: React.FC<BarProps> = props => <ReactEcharts option={option6} {...props} />;
-
-Radar.defaultProps = {};
+Radar.defaultProps = {
+  center: ['50%', '50%'],
+  radius: 85,
+  splitNumber: 3,
+  shape: 'polygon',
+  showLegend: true,
+};
 
 export default Radar;

@@ -53,6 +53,7 @@ DemonLayout.defaultProps = {
   item4: <Gauge style={{ height: '215px' }} />,
   item5: (
     <Pie
+      title="饼图/圆环图"
       dataset={[
         { name: '直接访问', value: 335 },
         { name: '邮件营销', value: 310 },
@@ -61,9 +62,25 @@ DemonLayout.defaultProps = {
         { name: '搜索引擎', value: 1548 },
       ]}
       // roseType={false}
-      radius={['50%','75%']}
+      radius={['50%', '75%']}
     />
   ),
-  item6: <Radar />,
+  item6: (
+    <Radar
+      title="雷达图"
+      indicator={[
+        { name: 'A', max: 10 },
+        { name: 'B', max: 10 },
+        { name: 'C', max: 10 },
+        { name: 'D', max: 10 },
+        { name: 'E', max: 10 },
+      ]}
+      dataset={[
+        { name: '测试1', value: [5, 8, 10, 3, 6] },
+        { name: '测试2', value: [2, 4, 4, 8, 9] },
+      ]}
+      radius={95}
+    />
+  ),
 };
 export default DemonLayout;

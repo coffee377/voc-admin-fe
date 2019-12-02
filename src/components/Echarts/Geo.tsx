@@ -104,21 +104,29 @@ class Geo extends React.PureComponent<GeoProps> {
     carouselInterval: 5,
   };
 
+  componentDidMount(): void {
+    const { carousel } = this.props;
+    if (carousel) {
+      // 轮播开启时选中开始项
+      this.selectArea(this.getStartAreaName());
+
+      // 自动切换
+      this.addAutoSwitch();
+    }
+  }
+
+  componentWillUnmount(): void {
+    const { carousel } = this.props;
+    if (carousel) {
+      this.removeAutoSwitch();
+    }
+  }
+
   // 地图切换后回调函数
-  switchCallback = (params: any) => {
+  switchCallback = (params: { name: string } & { batch: { name: string }[] }) => {
     const { carouselCallback } = this.props;
     if (carouselCallback) {
       carouselCallback(params.name || params.batch[0].name || '');
-    }
-  };
-
-  // 选中地图区域
-  selectArea = (name: string) => {
-    if (this.echartsInstance) {
-      this.echartsInstance.dispatchAction({
-        type: 'geoSelect',
-        name,
-      });
     }
   };
 
@@ -128,9 +136,10 @@ class Geo extends React.PureComponent<GeoProps> {
     if (carouselNamesRank && carouselNamesRank.length > 0) {
       return carouselNamesRank;
     }
-    return Array.from(mapProps.geoJson['features'], v => {
-      return v['properties']['name'];
-    });
+    if ('geoJson' in mapProps) {
+      return Array.from(mapProps.geoJson.features, v => v.properties.name);
+    }
+    return [];
   };
 
   // 获取开始选中地区
@@ -138,17 +147,15 @@ class Geo extends React.PureComponent<GeoProps> {
     const names = this.getAreaNames();
     const { carouselStart } = this.props;
 
-    if (typeof carouselStart == 'string') {
-      const i = names.findIndex(value => {
-        return value == carouselStart;
-      });
+    if (typeof carouselStart === 'string') {
+      const i = names.findIndex(value => value === carouselStart);
       if (i >= 0) {
         this.selectedIndex = i;
         return carouselStart;
       }
     }
 
-    if (carouselStart >= 0 && carouselStart < names.length) {
+    if (typeof carouselStart === 'number' && carouselStart >= 0 && carouselStart < names.length) {
       this.selectedIndex = carouselStart;
       return names[carouselStart];
     }
@@ -174,6 +181,16 @@ class Geo extends React.PureComponent<GeoProps> {
     this.timeTicket = null;
   };
 
+  // 选中地图区域
+  selectArea = (name: string) => {
+    if (this.echartsInstance) {
+      this.echartsInstance.dispatchAction({
+        type: 'geoSelect',
+        name,
+      });
+    }
+  };
+
   toggleAutoSwitch = () => {
     const { carousel } = this.props;
     if (carousel) {
@@ -185,24 +202,6 @@ class Geo extends React.PureComponent<GeoProps> {
       }
     }
   };
-
-  componentDidMount(): void {
-    const { carousel } = this.props;
-    if (carousel) {
-      // 轮播开启时选中开始项
-      this.selectArea(this.getStartAreaName());
-
-      // 自动切换
-      this.addAutoSwitch();
-    }
-  }
-
-  componentWillUnmount(): void {
-    const { carousel } = this.props;
-    if (carousel) {
-      this.removeAutoSwitch();
-    }
-  }
 
   getOption = () => {
     const { aspectScale, mapProps, option } = this.props;
@@ -217,7 +216,7 @@ class Geo extends React.PureComponent<GeoProps> {
       },
       geo: {
         roam: true,
-        map: mapProps.mapName,
+        map: 'mapName' in mapProps ? mapProps.mapName : Geo.defaultProps.mapProps.mapName,
         aspectScale,
         nameMap: {},
         selectedMode: 'single', // multiple
@@ -246,7 +245,7 @@ class Geo extends React.PureComponent<GeoProps> {
     const { mapProps } = this.props;
 
     /* 注册地图 */
-    if (this.props.mapProps) {
+    if (mapProps) {
       echarts.registerMap(mapProps.mapName, mapProps.geoJson, mapProps.specialAreas);
     }
 

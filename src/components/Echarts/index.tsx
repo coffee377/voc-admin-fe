@@ -1,6 +1,6 @@
 import echarts from 'echarts';
-import { StyleProps } from '@/typings';
 import * as React from 'react';
+import { StyleProps } from '@/typings';
 
 export type Func = (...args: any[]) => any;
 
@@ -11,7 +11,7 @@ export interface EventMap {
 
 export interface EChartsPropsTypes extends StyleProps {
   // echarts: any;
-  //https://www.echartsjs.com/zh/api.html#echarts.init
+  // https://www.echartsjs.com/zh/api.html#echarts.init
   theme?: object | string;
   opts?: {
     devicePixelRatio?: number;
@@ -19,7 +19,7 @@ export interface EChartsPropsTypes extends StyleProps {
     width?: number | string;
     height?: number | string;
   };
-  //https://www.echartsjs.com/zh/api.html#echartsInstance.setOption
+  // https://www.echartsjs.com/zh/api.html#echartsInstance.setOption
   option: object;
   notMerge?: boolean;
   lazyUpdate?: boolean;
@@ -33,7 +33,9 @@ export interface EChartsPropsTypes extends StyleProps {
 
 class ECharts extends React.PureComponent<EChartsPropsTypes> {
   private echartsLib: any;
+
   private echartsInstance: echarts.ECharts;
+
   private echartsElement: HTMLDivElement | HTMLCanvasElement;
 
   constructor(props) {
@@ -42,6 +44,8 @@ class ECharts extends React.PureComponent<EChartsPropsTypes> {
     // this.echartsElement = null; // echarts div element
   }
 
+  componentWillMount(): void {}
+
   componentDidMount(): void {}
 
   componentDidUpdate(
@@ -49,8 +53,6 @@ class ECharts extends React.PureComponent<EChartsPropsTypes> {
     prevState: Readonly<{}>,
     snapshot?: any,
   ): void {}
-
-  componentWillMount(): void {}
 
   // return the echarts instance
   getEchartsInstance = () =>
