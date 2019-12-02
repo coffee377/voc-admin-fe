@@ -24,15 +24,15 @@ const GridLayout: React.FC<GridLayoutProps> = props => {
       )}
       <div className={classNames(`${prefixClassName}-container`)}>
         {items &&
-          items.map((item, index, array) => (
-              <div
-                key={index}
-                className={classNames(`${prefixClassName}-item`, item.className)}
-                style={item.style}
-              >
-                {item.content}
-              </div>
-            ))}
+          items.map((item, index) => (
+            <div
+              key={index}
+              className={classNames(`${prefixClassName}-item`, item.className)}
+              style={item.style}
+            >
+              {item.content}
+            </div>
+          ))}
       </div>
       {props.footer && (
         <div className={classNames(`${prefixClassName}-footer`)}>{props.footer}</div>

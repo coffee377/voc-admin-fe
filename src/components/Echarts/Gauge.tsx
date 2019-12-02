@@ -1,171 +1,200 @@
 import ReactEcharts from 'echarts-for-react';
 import React from 'react';
-import { EChartsProps } from '@/components/Echarts/echats';
+import { StyleProps, WithFalse } from '@/typings';
+import { mixin } from '@/utils/merge';
+import { NameValue } from '@/components/Echarts/Pie';
 
-export interface GaugeProps extends Partial<EChartsProps> {
-  // option?: any;
+export interface GaugeProps extends StyleProps {
+  /**
+   * 标题
+   */
+  title?: WithFalse<string>;
+  /**
+   * 是否显示图例
+   */
+  showLegend?: boolean;
+  /**
+   * 显示加载动画
+   */
+  loading?: boolean;
+  /**
+   * echarts 配置
+   */
+  option?: object;
+  /**
+   * 主题
+   */
+  theme?: object | string;
+  /**
+   * 数据集
+   */
+  dataset?: NameValue[];
 }
 
-const option5 = {
-  series: [
-    {
-      name: '总人次',
-      type: 'gauge',
-      center: ['50%', '45%'],
-      z: 3,
-      min: 0,
-      max: 100,
-      radius: '75%',
-      splitNumber: 10,
-      axisLine: {
-        lineStyle: {
-          width: 5,
-        },
-      },
-      axisTick: {
-        length: 12,
-        lineStyle: {
-          color: 'auto',
-        },
-      },
-      splitLine: {
-        length: 18,
-        lineStyle: {
-          color: 'auto',
-        },
-      },
-      pointer: {
-        width: 8,
-      },
-      title: {
-        textStyle: {
-          fontWeight: 'bolder',
-          fontSize: 16,
-          fontStyle: 'normal',
-          color: '#dedede',
-        },
-        offsetCenter: [0, '-25%'],
-      },
-      detail: {
-        textStyle: {
-          fontSize: 18,
-          fontWeight: 'bolder',
-          // color:'#fff324'
-        },
-        formatter: '{value} %',
-        offsetCenter: [0, '80%'],
-      },
+const Gauge: React.FC<GaugeProps> = props => {
+  const { loading, theme, style, className } = props;
+  const getOption = () => {
+    const { option, dataset } = props;
+    /* 仪表盘标题 */
+    const title = {
+      fontWeight: 'bolder',
+      fontSize: 16,
+      fontStyle: 'normal',
+      color: '#7b7b7b',
+    };
 
-      data: [32],
-    },
-    {
-      name: '门诊总人次占比',
-      type: 'gauge',
-      center: ['20%', '65%'],
-      radius: '55%',
-      min: 0,
-      max: 100,
-      endAngle: 30,
-      splitNumber: 5,
-      axisLine: {
-        lineStyle: {
-          width: 3,
-        },
-      },
-      axisTick: {
-        length: 6,
-        lineStyle: {
-          color: 'auto',
-        },
-      },
-      splitLine: {
-        length: 12,
-        lineStyle: {
-          color: 'auto',
-        },
-      },
-      pointer: {
-        width: 4,
-      },
+    /* 仪表盘详情，用于显示数据 */
+    const detail = {
+      fontSize: 18,
+      fontWeight: 'bolder',
+    };
+
+    const innerOption = {
       title: {
-        textStyle: {
-          fontWeight: 'bolder',
-          fontSize: 16,
-          fontStyle: 'normal',
-          color: '#dedede',
+        show: props.title,
+        text: props.title,
+      },
+      tooltip: {
+        formatter: '{b}: {c}%',
+      },
+      series: [
+        {
+          type: 'gauge',
+          center: ['50%', '45%'],
+          z: 3,
+          min: 0,
+          max: 100,
+          radius: '75%',
+          splitNumber: 10,
+          axisLine: {
+            lineStyle: {
+              width: 5,
+            },
+          },
+          axisTick: {
+            length: 12,
+            lineStyle: {
+              color: 'auto',
+            },
+          },
+          splitLine: {
+            length: 18,
+            lineStyle: {
+              color: 'auto',
+            },
+          },
+          pointer: {
+            width: 8,
+          },
+          title: {
+            ...title,
+            offsetCenter: [0, '125%'],
+          },
+          detail: {
+            ...detail,
+            formatter: '{value} %',
+            offsetCenter: [0, '80%'],
+          },
+          data: [dataset[0]],
         },
-        offsetCenter: ['40%', '30%'],
-      },
-      detail: {
-        textStyle: {
-          fontSize: 18,
-          fontWeight: 'bolder',
-          // color:'#fff324'
+        {
+          type: 'gauge',
+          center: ['20%', '65%'],
+          radius: '55%',
+          min: 0,
+          max: 100,
+          endAngle: 30,
+          splitNumber: 5,
+          axisLine: {
+            lineStyle: {
+              width: 3,
+            },
+          },
+          axisTick: {
+            length: 6,
+            lineStyle: {
+              color: 'auto',
+            },
+          },
+          splitLine: {
+            length: 12,
+            lineStyle: {
+              color: 'auto',
+            },
+          },
+          pointer: {
+            width: 4,
+          },
+          title: {
+            ...title,
+            offsetCenter: ['-10%', '-125%'],
+          },
+          detail: {
+            ...detail,
+            formatter: ' {value} %',
+            offsetCenter: ['0%', '100%'],
+          },
+          data: [dataset[1]],
         },
-        formatter: ' {value} %',
-        offsetCenter: ['0%', '100%'],
-      },
-      data: [37],
-    },
-    {
-      name: '住院总人次占比',
-      type: 'gauge',
-      center: ['80%', '65%'],
-      radius: '55%',
-      min: 0,
-      max: 100,
-      startAngle: 150,
-      endAngle: -45,
-      splitNumber: 5,
-      axisLine: {
-        lineStyle: {
-          color: [
-            [0.2, '#ff4500'],
-            [0.8, '#48b'],
-            [1, '#228b22'],
-          ],
-          width: 3,
+        {
+          type: 'gauge',
+          center: ['80%', '65%'],
+          radius: '55%',
+          min: 0,
+          max: 100,
+          startAngle: 150,
+          endAngle: -45,
+          splitNumber: 5,
+          axisLine: {
+            lineStyle: {
+              width: 3,
+            },
+          },
+          axisTick: {
+            splitNumber: 5,
+            length: 6,
+            lineStyle: {
+              color: 'auto',
+            },
+          },
+          splitLine: {
+            length: 12,
+            lineStyle: {
+              color: 'auto',
+            },
+          },
+          pointer: {
+            width: 5,
+          },
+          title: {
+            ...title,
+            offsetCenter: ['10%', '-125%'],
+          },
+          detail: {
+            ...detail,
+            formatter: ' {value} %',
+            offsetCenter: ['0%', '100%'],
+          },
+          data: [dataset[2]],
         },
-      },
-      axisTick: {
-        splitNumber: 5,
-        length: 6,
-        lineStyle: {
-          color: 'auto',
-        },
-      },
-      splitLine: {
-        length: 12,
-        lineStyle: {
-          color: 'auto',
-        },
-      },
-      pointer: {
-        width: 5,
-      },
-      title: {
-        textStyle: {
-          fontWeight: 'bolder',
-          fontSize: 16,
-          fontStyle: 'normal',
-          color: '#dedede',
-        },
-        offsetCenter: ['-40%', '30%'],
-      },
-      detail: {
-        textStyle: {
-          fontSize: 18,
-          fontWeight: 'bolder',
-        },
-        formatter: ' {value} %',
-        offsetCenter: ['-40%', '100%'],
-      },
-      data: [27],
-    },
-  ],
+      ],
+    };
+    return mixin(innerOption, option);
+  };
+
+  return (
+    <ReactEcharts
+      option={getOption()}
+      showLoading={loading}
+      theme={theme}
+      style={style}
+      className={className}
+    />
+  );
 };
 
-const Gauge: React.FC<GaugeProps> = props => <ReactEcharts option={option5} style={props.style} />;
-Gauge.defaultProps = {};
+Gauge.defaultProps = {
+  showLegend: true,
+};
 
 export default Gauge;
