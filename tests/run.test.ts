@@ -17,7 +17,7 @@ test(`${JSON.stringify(data2)}`, () => {
   expect(isApiStructured(data3)).toBe(true);
 });
 
-test(`merge`, () => {
+test('merge', () => {
   const s1 = { a: [1], b: [2] };
   const s2 = { a: [3], b: [4] };
   const s3 = { a: [5], b: [6] };

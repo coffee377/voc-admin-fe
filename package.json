@@ -49,6 +49,7 @@
     "mockjs": "latest",
     "prettier": "^1.18.2",
     "roadhog-api-doc": "latest",
+    "ts-jest": "^24.2.0",
     "umi-types": "^0.5.3"
   },
   "husky": {
