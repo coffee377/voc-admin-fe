@@ -5,7 +5,7 @@ import { mixin } from '@/utils/merge';
 
 export interface NameValue {
   name: string;
-  value: number;
+  value: number | number[];
 }
 
 export interface BarProps extends StyleProps {

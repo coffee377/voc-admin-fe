@@ -1,79 +1,78 @@
 import ReactEcharts from 'echarts-for-react';
 import React from 'react';
-import { StyleProps } from '@/typings';
+import { mixin } from '@/utils/merge';
+import { CommonProps } from '@/components/Echarts/index';
 
-export interface BarProps extends StyleProps {
-  // option?: any;
+export interface BarProps extends CommonProps {
+  /**
+   * 数据集
+   */
+  dataset?: any[][] | Record<string, any>;
 }
 
-const option1 = {
-  title: {
-    text: '某地区蒸发量和降水量',
-    subtext: '纯属虚构',
-  },
-  tooltip: {
-    trigger: 'axis',
-  },
-  legend: {
-    bottom: 0,
-    type: 'scroll',
-    data: ['蒸发量', '降水量'],
-  },
-  toolbox: {
-    show: true,
-    feature: {
-      dataView: { show: true, readOnly: false },
-      magicType: { show: true, type: ['line', 'bar'] },
-      restore: { show: true },
-      saveAsImage: { show: true },
-    },
-  },
-  calculable: true,
-  xAxis: [
-    {
-      type: 'category',
-      data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-    },
-  ],
-  yAxis: [
-    {
-      type: 'value',
-    },
-  ],
-  series: [
-    {
-      name: '蒸发量',
-      type: 'bar',
-      data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
-      markPoint: {
-        data: [
-          { type: 'max', name: '最大值' },
-          { type: 'min', name: '最小值' },
-        ],
+const Bar: React.FC<BarProps> = props => {
+  const { loading, theme, style, className } = props;
+
+  const getOption = () => {
+    const { title, showLegend, dataset, option } = props;
+    const series = [];
+    if (Array.isArray(dataset) && Array.isArray(dataset[0])) {
+      const d = dataset[0] as Array<any>;
+      for (let i = 1; i < d.length; i++) {
+        series.push({ type: 'bar', seriesLayoutBy: 'column' });
+      }
+    }
+
+    const innerOption = {
+      title: {
+        show: title,
+        text: title,
       },
-      markLine: {
-        data: [{ type: 'average', name: '平均值' }],
+      grid: {
+        left: '2%',
+        right: '2%',
+        bottom: '10%',
+        containLabel: true,
       },
-    },
-    {
-      name: '降水量',
-      type: 'bar',
-      data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
-      markPoint: {
-        data: [
-          { name: '年最高', value: 182.2, xAxis: 7, yAxis: 183 },
-          { name: '年最低', value: 2.3, xAxis: 11, yAxis: 3 },
-        ],
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross',
+          snap: true,
+        },
       },
-      markLine: {
-        data: [{ type: 'average', name: '平均值' }],
+      legend: {
+        show: showLegend,
+        type: 'scroll',
+        x: 'center',
+        y: 'bottom',
       },
-    },
-  ],
+
+      xAxis: [{ type: 'category', gridIndex: 0 }],
+      yAxis: [{ type: 'value', gridIndex: 0 }],
+      dataset: {
+        source: dataset,
+      },
+      series,
+    };
+
+    return mixin(innerOption, option);
+  };
+
+  return (
+    <ReactEcharts
+      option={getOption()}
+      showLoading={loading}
+      theme={theme}
+      style={style}
+      className={className}
+    />
+  );
 };
 
-const Bar: React.FC<BarProps> = props => <ReactEcharts option={option1} {...props} />;
-
-Bar.defaultProps = {};
+Bar.defaultProps = {
+  dataset: [],
+  showLegend: true,
+};
 
 export default Bar;

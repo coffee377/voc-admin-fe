@@ -1,100 +1,117 @@
 import ReactEcharts from 'echarts-for-react';
 import React from 'react';
-import { EChartsProps } from '@/components/Echarts/echats';
+import { CommonProps } from '@/components/Echarts/index';
+import { mixin } from '@/utils/merge';
+import { NameValue } from '@/components/Echarts/Pie';
 
-export interface BarProps extends Partial<EChartsProps> {
-  // option?: any;
+export interface LineData {
+  category?: string[];
+  series?: NameValue[];
 }
 
-const option2 = {
-  title: {
-    text: '堆叠区域图',
-  },
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: {
-      type: 'cross',
-      label: {
-        backgroundColor: '#6a7985',
-      },
-    },
-  },
-  legend: {
-    // bottom: 0,
-    y: 'bottom',
-    type: 'scroll',
-    data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎'],
-  },
-  toolbox: {
-    feature: {
-      saveAsImage: {},
-    },
-  },
-  grid: {
-    left: '5%',
-    right: '5%',
-    bottom: '10%',
-    containLabel: true,
-  },
-  xAxis: [
-    {
-      type: 'category',
-      boundaryGap: false,
-      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
-    },
-  ],
-  yAxis: [
-    {
-      type: 'value',
-    },
-  ],
-  series: [
-    {
-      name: '邮件营销',
-      type: 'line',
-      stack: '总量',
-      areaStyle: {},
-      data: [120, 132, 101, 134, 90, 230, 210],
-    },
-    {
-      name: '联盟广告',
-      type: 'line',
-      stack: '总量',
-      areaStyle: {},
-      data: [220, 182, 191, 234, 290, 330, 310],
-    },
-    {
-      name: '视频广告',
-      type: 'line',
-      stack: '总量',
-      areaStyle: {},
-      data: [150, 232, 201, 154, 190, 330, 410],
-    },
-    {
-      name: '直接访问',
-      type: 'line',
-      stack: '总量',
-      areaStyle: { normal: {} },
-      data: [320, 332, 301, 334, 390, 330, 320],
-    },
-    {
-      name: '搜索引擎',
-      type: 'line',
-      stack: '总量',
-      label: {
-        normal: {
-          show: true,
+export interface LineProps extends CommonProps {
+  /**
+   * 数据集
+   */
+  dataset?: LineData;
+  /**
+   * 是否堆叠
+   */
+  stack?: boolean | string;
+  /**
+   * 是否平滑曲线
+   */
+  smooth?: boolean;
+}
+
+const Line: React.FC<LineProps> = props => {
+  const { loading, theme, style, className } = props;
+
+  const getOption = () => {
+    const { title, showLegend, dataset, stack, smooth, option } = props;
+
+    const series = [];
+
+    dataset?.series?.forEach((item, index, array) => {
+      let s: object = {
+        name: item.name,
+        type: 'line',
+        smooth,
+        label: {
           position: 'top',
         },
+        lineStyle: {
+          width: 1,
+          type: 'dotted',
+        },
+        areaStyle: {},
+        z: array.length - index,
+        data: item.value,
+      };
+
+      if (stack) {
+        s = mixin(s, { stack });
+      }
+
+      series.push(s);
+    });
+
+    const innerOption = {
+      title: {
+        show: title,
+        text: title,
       },
-      areaStyle: { normal: {} },
-      data: [820, 932, 901, 934, 1290, 1330, 1320],
-    },
-  ],
+      tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+          type: 'cross',
+        },
+      },
+      legend: {
+        show: showLegend,
+        type: 'scroll',
+        x: 'center',
+        y: 'bottom',
+      },
+      grid: {
+        left: '5%',
+        right: '5%',
+        bottom: '10%',
+        containLabel: true,
+      },
+      xAxis: [
+        {
+          type: 'category',
+          boundaryGap: false,
+          data: dataset?.category,
+        },
+      ],
+      yAxis: [{ type: 'value' }],
+      series,
+    };
+
+    return mixin(innerOption, option);
+  };
+
+  return (
+    <ReactEcharts
+      option={getOption()}
+      showLoading={loading}
+      theme={theme}
+      style={style}
+      className={className}
+    />
+  );
 };
 
-const Line: React.FC<BarProps> = props => <ReactEcharts option={option2} {...props} />;
-
-Line.defaultProps = {};
+Line.defaultProps = {
+  dataset: {
+    category: [],
+    series: [],
+  },
+  showLegend: true,
+  stack: false,
+  smooth: true,
+};
 
 export default Line;

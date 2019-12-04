@@ -1,12 +1,38 @@
 import echarts from 'echarts';
 import * as React from 'react';
-import { StyleProps } from '@/typings';
+import { StyleProps, WithFalse } from '@/typings';
 
 export type Func = (...args: any[]) => any;
 
 /* EChars 事件 */
 export interface EventMap {
   [key: string]: Func;
+}
+
+/**
+ * 组件通用属性
+ */
+export interface CommonProps extends StyleProps {
+  /**
+   * 标题
+   */
+  title?: WithFalse<string>;
+  /**
+   * 是否显示图例
+   */
+  showLegend?: boolean;
+  /**
+   * 显示加载动画
+   */
+  loading?: boolean;
+  /**
+   * 主题
+   */
+  theme?: object | string;
+  /**
+   * echarts 配置
+   */
+  option?: object;
 }
 
 export interface EChartsPropsTypes extends StyleProps {
