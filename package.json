@@ -60,7 +60,7 @@
   },
   "lint-staged": {
     "*.less": [
-      "stylelint --syntax less",
+      "stylelint --fix --syntax less",
       "prettier --write",
       "git add"
     ],
