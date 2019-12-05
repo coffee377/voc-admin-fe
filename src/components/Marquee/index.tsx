@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { StyleProps, WithFalse } from '@/typings';
 
@@ -12,7 +12,6 @@ export interface MarqueeProps extends StyleProps {
    * @default title = false
    */
   title?: WithFalse<React.ReactNode>;
-
   /**
    * @description 显示加载动画
    * @type {boolean}
@@ -88,6 +87,7 @@ export interface MarqueeProps extends StyleProps {
 }
 
 const Marquee: React.FC<MarqueeProps> = props => {
+  const [copyContent, setCopy] = useState<boolean>(false);
   const containerRef = useRef<HTMLElement>();
   const contentRef = useRef<HTMLElement>();
   const copyRef = useRef<HTMLElement>();
@@ -96,13 +96,19 @@ const Marquee: React.FC<MarqueeProps> = props => {
 
   // 移动计时器
   let scrollMove; // 数值越大，滚动速度越慢
-
+  // let copy: boolean = false;
   // 滚动函数
   const scrollFunc = (props: MarqueeProps) => {
     // console.log(props);
     const container = containerRef.current as HTMLElement;
     const content = contentRef.current as HTMLElement;
-    const copy = copyRef.current as HTMLElement;
+    // copy = content.clientHeight > container.clientHeight;
+    // console.log(`------------${copy}`);
+    // if (!copy) {
+    //   return;
+    // }
+    // console.log(container.clientHeight, content.clientHeight);
+    // const copy = copyRef.current as HTMLElement;
     const { direction, scrollAmount } = props;
 
     switch (direction) {
@@ -153,6 +159,12 @@ const Marquee: React.FC<MarqueeProps> = props => {
   };
 
   useEffect(() => {
+    const c = containerRef.current as HTMLElement;
+    const c1 = contentRef.current as HTMLElement;
+    setCopy(c1.clientHeight - c.clientHeight > 0);
+  }, []);
+
+  useEffect(() => {
     setScrollMove();
     return () => {
       removeScrollMove();
@@ -172,9 +184,11 @@ const Marquee: React.FC<MarqueeProps> = props => {
         <div ref={contentRef} style={{}}>
           {props.children}
         </div>
-        <div ref={copyRef} style={{}}>
-          {props.children}
-        </div>
+        {copyContent && (
+          <div ref={copyRef} style={{}}>
+            {props.children}
+          </div>
+        )}
       </div>
     </>
   );

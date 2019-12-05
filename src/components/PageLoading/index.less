@@ -1,30 +1,31 @@
 .loader {
-  background-color: #fff;
-  width: 100%;
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   z-index: 100000;
   display: flex;
-  justify-content: center;
   align-items: center;
-  opacity: 1;
+  justify-content: center;
+  width: 100%;
   text-align: center;
+  background-color: #fff;
+  opacity: 1;
 
   &.fullScreen {
     position: fixed;
   }
 
   .wrapper {
-    width: 100px;
-    height: 100px;
     display: inline-flex;
     flex-direction: column;
     justify-content: space-around;
+    width: 100px;
+    height: 100px;
   }
 
   .inner {
+    z-index: 100001;
     width: 40px;
     height: 40px;
     margin: 0 auto;
@@ -34,7 +35,6 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     border-left: 1px solid rgba(0, 0, 0, 0.7);
     border-radius: 50%;
-    z-index: 100001;
 
     :local {
       animation: spinner 600ms infinite linear;
@@ -44,10 +44,10 @@
   .text {
     width: 100px;
     height: 20px;
-    text-align: center;
+    color: #000;
     font-size: 12px;
     letter-spacing: 4px;
-    color: #000;
+    text-align: center;
   }
 
   &.hidden {

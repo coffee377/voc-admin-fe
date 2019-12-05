@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { StyleProps } from '@/typings';
 import './layout.less';
 import GridLayout, { Item } from '@/layouts/GridLayout';
@@ -24,13 +25,20 @@ export interface DemonLayoutProps extends Partial<StyleProps> {
 
 const DemonLayout: React.FC<DemonLayoutProps> = props => {
   const items: Item[] = [];
-  items.push({ content: props.item1, className: 'ui-grid-item1' } as Item);
-  items.push({ content: props.item2, className: 'ui-grid-item2' } as Item);
-  items.push({ content: props.item3, className: 'ui-grid-item3' } as Item);
-  items.push({ content: props.item4, className: 'ui-grid-item4' } as Item);
-  items.push({ content: props.item5, className: 'ui-grid-item5' } as Item);
-  items.push({ content: props.item6, className: 'ui-grid-item6' } as Item);
-  return <GridLayout header={props.header} items={items} footer={props.footer} />;
+  items.push({ key: 'item1', content: props.item1, className: 'ui-grid-item1' } as Item);
+  items.push({ key: 'item2', content: props.item2, className: 'ui-grid-item2' } as Item);
+  items.push({ key: 'item3', content: props.item3, className: 'ui-grid-item3' } as Item);
+  items.push({ key: 'item4', content: props.item4, className: 'ui-grid-item4' } as Item);
+  items.push({ key: 'item5', content: props.item5, className: 'ui-grid-item5' } as Item);
+  items.push({ key: 'item6', content: props.item6, className: 'ui-grid-item6' } as Item);
+  return (
+    <GridLayout
+      header={props.header}
+      items={items}
+      footer={props.footer}
+      className={classNames('demon', props.className)}
+    />
+  );
 };
 
 const data = [
@@ -465,6 +473,72 @@ DemonLayout.defaultProps = {
   //     radius={95}
   //   />
   // ),
-  item6: <Rank />,
+  item6: (
+    <Rank
+      title={false}
+      dataset={[
+        {
+          name: '中国科学技术大学附属第一医院(安徽省立医院)',
+          value: 16767.46,
+        },
+        {
+          name: '安徽医科大学第一附属医院',
+          value: 11652.37,
+        },
+        {
+          name: '安徽中医药大学第一附属医院',
+          value: 6408.0,
+        },
+        {
+          name: '中国人民解放军联勤保障部队第九〇一医院',
+          value: 2183.84,
+        },
+        {
+          name: '武警安徽总队医院',
+          value: 1445.04,
+        },
+        {
+          name: '中国科学技术大学附属第一医院(安徽省立医院)',
+          value: 16767.46,
+        },
+        {
+          name: '安徽医科大学第一附属医院',
+          value: 11652.37,
+        },
+        {
+          name: '安徽中医药大学第一附属医院',
+          value: 6408.0,
+        },
+        {
+          name: '中国人民解放军联勤保障部队第九〇一医院',
+          value: 2183.84,
+        },
+        {
+          name: '武警安徽总队医院',
+          value: 1445.04,
+        },
+        {
+          name: '中国科学技术大学附属第一医院(安徽省立医院)',
+          value: 16767.46,
+        },
+        {
+          name: '安徽医科大学第一附属医院',
+          value: 11652.37,
+        },
+        {
+          name: '安徽中医药大学第一附属医院',
+          value: 6408.0,
+        },
+        {
+          name: '中国人民解放军联勤保障部队第九〇一医院',
+          value: 2183.84,
+        },
+        {
+          name: '武警安徽总队医院',
+          value: 1445.04,
+        },
+      ]}
+    />
+  ),
 };
 export default DemonLayout;

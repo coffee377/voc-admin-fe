@@ -13,6 +13,7 @@
     "test": "umi test --coverage",
     "lint:es": "eslint --ext .js src mock tests",
     "lint:ts": "tslint \"src/**/*.ts\" \"src/**/*.tsx\"",
+    "lint:style": "stylelint --fix \"src/**/*.less\" --syntax less",
     "precommit": "lint-staged"
   },
   "dependencies": {
