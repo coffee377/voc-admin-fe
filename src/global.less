@@ -10,7 +10,7 @@ body {
 
 // css grid 布局
 @ui-grid: ~'ui-grid';
-@ui-grid-gap-row: 0px;
+@ui-grid-gap-row: 0;
 @ui-grid-gap-col: 0;
 
 .@{ui-grid} {
@@ -18,11 +18,17 @@ body {
     & > .@{ui-grid}-container {
       display: grid;
       grid-auto-flow: row; // 先行后列
+
+      //justify-items: center;
       //grid-template-columns: repeat(3, 1fr);
+      //align-content: center;
       gap: @ui-grid-gap-row @ui-grid-gap-col; //行间距 列间距
 
       & > .@{ui-grid}-item {
-        text-align: center;
+        //text-align: center;
+        //justify-self: stretch;
+        //align-self: center;
+        padding: 6px 8px;
       }
     }
 

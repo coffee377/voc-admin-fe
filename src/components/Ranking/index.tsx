@@ -1,8 +1,10 @@
 import React, { CSSProperties } from 'react';
 import classNames from 'classnames';
-import { StyleProps, WithFalse } from '@/typings';
-import Marquee from '@/components/Marquee';
+import { Table } from 'antd';
+import { WithFalse } from '@/typings';
+import Marquee, { MarqueeProps } from '@/components/Marquee';
 import GridLayout, { Item } from '@/layouts/GridLayout';
+import styles from './style.less';
 
 export interface RankData {
   ranking?: number;
@@ -22,6 +24,10 @@ export interface FieldInfo {
    */
   alias?: string;
   /**
+   * @description 宽度
+   */
+  width?: number | string;
+  /**
    * @description 文字对齐方式
    */
   align?: 'left' | 'center' | 'right';
@@ -40,10 +46,11 @@ type CalcRankData = (input: RankData[]) => RankData[];
 
 /**
  * @description 获取排序头
- * @param field Field[]
+ * @param field {Field[]}
+ * @param unit {string}
  * @return Item[]
  */
-type CalcRankHeader = (field: Field[]) => Item[];
+type CalcRankHeader = (field: Field[], unit?: string) => Item[];
 
 /**
  * @description 生成 GridLayout 数据项
@@ -58,7 +65,7 @@ type CalcGridLayoutItems = (
   rankingRender?: RankingRender,
 ) => Item[];
 
-export interface RankProps extends StyleProps {
+export interface RankProps extends MarqueeProps {
   /**
    * 标题
    */
@@ -67,7 +74,6 @@ export interface RankProps extends StyleProps {
    * 标题样式
    */
   titleStyle?: CSSProperties;
-
   /**
    * 显示加载动画
    */
@@ -126,13 +132,14 @@ const calcData: CalcRankData = (data: RankData[]) => {
 
 const getItems = (
   row: string,
-  filed: Field[],
+  field: Field[],
   rankingRender?: RankingRender,
   data?: RankData,
+  unit?: string,
   header?: boolean,
 ) => {
   const items: Item[] = [];
-  filed.forEach((value, col) => {
+  field.forEach((value, col) => {
     // 1.获取键名及配置信息
     let f: [string, FieldInfo];
     if (typeof value === 'string') {
@@ -148,6 +155,9 @@ const getItems = (
     // 2.构建展示数据
     if (fieldInfo.show) {
       let itemContent: React.ReactNode = fieldInfo.alias || fieldKey;
+      if (fieldKey === 'value' && unit) {
+        itemContent += unit;
+      }
       if (!header) {
         if (fieldKey === 'ranking' && rankingRender) {
           itemContent = rankingRender(data[fieldKey] as number);
@@ -166,9 +176,9 @@ const getItems = (
   return items;
 };
 
-const calcHeader: CalcRankHeader = (filed: Field[]) => {
+const calcHeader: CalcRankHeader = (field, unit) => {
   let items: Item[] = [];
-  items = items.concat(getItems('R0', filed, undefined, undefined, true));
+  items = items.concat(getItems('R0', field, undefined, undefined, unit, true));
   return items;
 };
 
@@ -176,37 +186,72 @@ const calcHeader: CalcRankHeader = (filed: Field[]) => {
  * 计算列占比
  * @param header
  */
-const gridColumns = (header: Item[]) => '1fr 5fr 2fr';
+const gridColumns = (header: Item[]) => `60px repeat(${header.length - 2}, 1fr) 100px`;
 
-const calcItems: CalcGridLayoutItems = (data, filed, rankingRender) => {
+const calcItems: CalcGridLayoutItems = (data, field, rankingRender) => {
   let items: Item[] = [];
   data.forEach((item, row) => {
-    items = items.concat(getItems(`R${row + 1}`, filed, rankingRender, item));
+    items = items.concat(getItems(`R${row + 1}`, field, rankingRender, item));
   });
   return items;
 };
 
 const Rank: React.FC<RankProps> = props => {
-  const { title, titleStyle, dataset, filed, rankingRender, className } = props;
-  const rankHeader = calcHeader(filed);
+  const { title, titleStyle, dataset, field, unit, rankingRender, className } = props;
+  // console.log(field);
+  const rankHeader = calcHeader(field as Field[], unit);
   const gridTemplateColumns = gridColumns(rankHeader);
-
+  const gridItemStyle = { borderBottom: '1px dashed grey' };
   const rankTitle = (
     <GridLayout
-      header={title && <span style={{ textAlign: 'left', ...titleStyle }}>{title}</span>}
+      header={
+        title && <div style={{ margin: '0 5px', textAlign: 'left', ...titleStyle }}>{title}</div>
+      }
       gridContainerStyle={{ gridTemplateColumns }}
+      // gridItemStyle={gridItemStyle}
       items={rankHeader}
     />
   );
   const data = calcData(dataset as RankData[]);
-  const rankItems = calcItems(data, filed as Field[], rankingRender);
-
+  const rankItems = calcItems(data, field as Field[], rankingRender);
   return (
-    <Marquee title={rankTitle}>
-      <GridLayout
-        gridContainerStyle={{ gridTemplateColumns }}
-        items={rankItems}
-        className={classNames('rank', className)}
+    <Marquee {...props}>
+      {/* <GridLayout */}
+      {/*  gridContainerStyle={{ gridTemplateColumns, gap: '0px 1px' }} */}
+      {/*  gridItemStyle={gridItemStyle} */}
+      {/*  items={rankItems} */}
+      {/*  className={classNames('rank', className)} */}
+      {/* /> */}
+      <Table
+        className={styles.rankTable}
+        rowKey={record => record.ranking}
+        dataSource={data}
+        columns={[
+          {
+            // title: '排名',
+            dataIndex: 'ranking',
+            align: 'center',
+            width: '60px',
+            render: text => (rankingRender ? rankingRender(text) : text),
+          },
+
+          {
+            // title: '医疗机构',
+            dataIndex: 'name',
+            align: 'left',
+            // ellipsis: true,
+            render: (text, record, index) => <div>{text}</div>,
+          },
+          {
+            // title: '金额（万）',
+            dataIndex: 'value',
+            align: 'right',
+            width: '100px',
+            render: text => text.toFixed(2),
+          },
+        ]}
+        showHeader={false}
+        pagination={false}
       />
     </Marquee>
   );
@@ -221,15 +266,15 @@ Rank.defaultProps = {
     fontFamily: 'sans-serif',
     fontSize: 18,
   },
+  loading: false,
+  theme: null,
   dataset: [],
-  filed: [
+  field: [
     ['ranking', { show: true, alias: '排名', align: 'center' } as FieldInfo],
     ['name', { show: true, alias: '名称', align: 'left' } as FieldInfo],
     ['value', { show: true, alias: '数值', align: 'right' } as FieldInfo],
   ],
-  rowNum: 5,
-  waitTime: 2000,
-  carousel: 'seamless',
+  rankingRender: ranking => <div className={styles.top}>{ranking}</div>,
   unit: '',
 };
 

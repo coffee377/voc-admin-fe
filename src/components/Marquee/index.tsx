@@ -13,17 +13,17 @@ export interface MarqueeProps extends StyleProps {
    */
   title?: WithFalse<React.ReactNode>;
   /**
+   * @description 高度
+   * @type {number}
+   * @default height = 300
+   */
+  height?: number;
+  /**
    * @description 显示加载动画
    * @type {boolean}
    * @default loading = false
    */
   loading?: boolean;
-  /**
-   * @description 主题
-   * @type {object|string}
-   * @default theme = null
-   */
-  theme?: object | string;
   /**
    * @description 滚动方向
    * @type {string}
@@ -31,47 +31,17 @@ export interface MarqueeProps extends StyleProps {
    */
   direction?: 'up' | 'down' | 'left' | 'right';
   /**
-   * @description 循环次数，-1 为无限循环
-   * @type {number}
-   * @default loop = -1
-   */
-  loop?: number;
-  /**
-   * @description 每次重复之前的延迟
-   * @type {number}
-   * @default scrollDelay = 0
-   */
-  scrollDelay?: number;
-  /**
    * @description 滚动量，越大越快
    * @type {number}
-   * @default scrollAmount = 1
+   * @default scrollAmount = 0.5
    */
   scrollAmount?: number;
   /**
    * @description 滚动时间间隔，数值越大滚动速度越慢
    * @type {number}
-   * @default interval = 50
+   * @default interval = 20
    */
   interval?: number;
-  /**
-   * @description 无缝滚动
-   * @type {boolean}
-   * @default circular = true
-   */
-  circular?: boolean;
-  /**
-   * @description 鼠标可拖动
-   * @type {boolean}
-   * @default drag = true
-   */
-  drag?: boolean;
-  /**
-   * @description 内容不足是否滚动
-   * @type {boolean}
-   * @default runShort = true
-   */
-  runShort?: boolean;
   /**
    * @description 鼠标悬停暂停
    * @type {boolean}
@@ -79,42 +49,69 @@ export interface MarqueeProps extends StyleProps {
    */
   hoverStop?: boolean;
   /**
-   * @description 反向，即默认不滚动，鼠标悬停滚动
-   * @type {boolean}
-   * @default invertHover = false
+   * @description 循环次数，-1 为无限循环
+   * @type {number}
+   * @default loop = -1
    */
-  invertHover?: boolean;
+  loop?: number;
+  /**
+   * @description 内容不足是否滚动
+   * @type {boolean}
+   * @default runShort = true
+   */
+  runShort?: boolean;
+}
+
+interface ScrollState {
+  run: boolean;
+  title: HTMLElement;
+  container: HTMLElement;
+  content: HTMLElement;
 }
 
 const Marquee: React.FC<MarqueeProps> = props => {
-  const [copyContent, setCopy] = useState<boolean>(false);
+  const titleRef = useRef<HTMLElement>();
   const containerRef = useRef<HTMLElement>();
   const contentRef = useRef<HTMLElement>();
-  const copyRef = useRef<HTMLElement>();
+  const [scroll, setScroll] = useState<ScrollState>({ run: false } as ScrollState);
 
-  const { title, style, className } = props;
+  // const copyRef = useRef<HTMLElement>();
+
+  const { title, height, style, className } = props;
 
   // 移动计时器
-  let scrollMove; // 数值越大，滚动速度越慢
-  // let copy: boolean = false;
+  let scrollMove;
+
+  // 滚动次数
+  let runTimes = 0;
+
+  /**
+   * 计算获取内容区高度
+   */
+  const getContentHeight = () => {
+    if (scroll.title) {
+      const { clientHeight } = scroll.title;
+      if (clientHeight) {
+        return height - clientHeight;
+      }
+    }
+    return height;
+  };
+
   // 滚动函数
   const scrollFunc = (props: MarqueeProps) => {
-    // console.log(props);
-    const container = containerRef.current as HTMLElement;
-    const content = contentRef.current as HTMLElement;
-    // copy = content.clientHeight > container.clientHeight;
-    // console.log(`------------${copy}`);
-    // if (!copy) {
-    //   return;
-    // }
-    // console.log(container.clientHeight, content.clientHeight);
-    // const copy = copyRef.current as HTMLElement;
-    const { direction, scrollAmount } = props;
+    if (!scroll.run) {
+      return;
+    }
+
+    const { container, content } = scroll;
+    const { direction, scrollAmount, loop } = props;
 
     switch (direction) {
       case 'down':
         if (container.scrollTop <= 0) {
           container.scrollTop = content.offsetHeight;
+          runTimes++;
         } else {
           container.scrollTop -= scrollAmount as number;
         }
@@ -122,6 +119,7 @@ const Marquee: React.FC<MarqueeProps> = props => {
       case 'left':
         if (container.scrollLeft >= content.offsetWidth) {
           container.scrollLeft = 0;
+          runTimes++;
         } else {
           container.scrollLeft += scrollAmount as number;
         }
@@ -132,6 +130,7 @@ const Marquee: React.FC<MarqueeProps> = props => {
       default:
         if (container.scrollTop >= content.offsetHeight) {
           container.scrollTop = 0;
+          runTimes++;
         } else {
           container.scrollTop += scrollAmount as number;
         }
@@ -159,13 +158,27 @@ const Marquee: React.FC<MarqueeProps> = props => {
   };
 
   useEffect(() => {
-    const c = containerRef.current as HTMLElement;
-    const c1 = contentRef.current as HTMLElement;
-    setCopy(c1.clientHeight - c.clientHeight > 0);
+    const title = titleRef.current as HTMLElement;
+    const container = containerRef.current as HTMLElement;
+    const content = contentRef.current as HTMLElement;
+    // scroll.run = content.clientHeight - container.clientHeight > 0;
+    // scroll.container = container;
+    // scroll.content = content;
+    // 此方式不能及时拿到 state
+    setScroll({
+      // 内容长度不足时不滚动
+      run: content.clientHeight - container.clientHeight > 0,
+      title,
+      container,
+      content,
+    } as ScrollState);
+    // setCopy(content.clientHeight - container.clientHeight > 0);
   }, []);
 
   useEffect(() => {
-    setScrollMove();
+    if (scroll.run) {
+      setScrollMove();
+    }
     return () => {
       removeScrollMove();
     };
@@ -173,9 +186,17 @@ const Marquee: React.FC<MarqueeProps> = props => {
 
   return (
     <>
-      {title && <div className="ui-marquee-title">{title}</div>}
+      {title && (
+        <div ref={titleRef} className="ui-marquee-title">
+          {title}
+        </div>
+      )}
       <div
-        style={{ height: '300px', overflow: 'hidden', ...style }}
+        style={{
+          height: `${getContentHeight()}px`,
+          overflow: 'hidden',
+          ...style,
+        }}
         className={classNames('ui-marquee-content', className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
@@ -184,11 +205,7 @@ const Marquee: React.FC<MarqueeProps> = props => {
         <div ref={contentRef} style={{}}>
           {props.children}
         </div>
-        {copyContent && (
-          <div ref={copyRef} style={{}}>
-            {props.children}
-          </div>
-        )}
+        {scroll.run && <div>{props.children}</div>}
       </div>
     </>
   );
@@ -196,18 +213,14 @@ const Marquee: React.FC<MarqueeProps> = props => {
 
 Marquee.defaultProps = {
   title: false,
+  height: 300,
   loading: false,
-  theme: null,
   direction: 'up',
-  loop: -1,
-  scrollDelay: 0,
-  scrollAmount: 1,
-  interval: 50,
-  circular: true,
-  drag: true,
-  runShort: true,
+  scrollAmount: 0.5,
+  interval: 20,
   hoverStop: true,
-  invertHover: false,
+  loop: -1,
+  runShort: true,
 };
 
 export default Marquee;

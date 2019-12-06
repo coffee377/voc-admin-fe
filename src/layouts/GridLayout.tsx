@@ -10,6 +10,7 @@ export interface Item extends Partial<StyleProps> {
 
 export interface GridLayoutProps extends Partial<StyleProps> {
   gridContainerStyle?: CSSProperties;
+  gridItemStyle?: CSSProperties;
   header?: React.ReactNode;
   items?: Item[];
   footer?: React.ReactNode;
@@ -18,7 +19,7 @@ export interface GridLayoutProps extends Partial<StyleProps> {
 const prefixClassName = 'ui-grid';
 
 const GridLayout: React.FC<GridLayoutProps> = props => {
-  const { className, style, gridContainerStyle, items, children } = props;
+  const { className, style, gridContainerStyle, gridItemStyle, items, children } = props;
   return (
     <div className={classNames(`${prefixClassName}-wrap`, className)} style={style}>
       {props.header && (
@@ -30,7 +31,7 @@ const GridLayout: React.FC<GridLayoutProps> = props => {
             <div
               key={item.key}
               className={classNames(`${prefixClassName}-item`, item.className)}
-              style={item.style}
+              style={{ ...gridItemStyle, ...item.style }}
             >
               {item.content}
             </div>
