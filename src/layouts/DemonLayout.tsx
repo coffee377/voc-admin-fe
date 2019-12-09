@@ -9,7 +9,7 @@ import Line from '@/components/Echarts/Line';
 import Pie from '@/components/Echarts/Pie';
 import Radar from '@/components/Echarts/Radar';
 import Gauge from '@/components/Echarts/Gauge';
-import Rank from '@/components/Ranking/';
+import Rank from '@/components/Rank/';
 import Marquee from '@/components/Marquee';
 
 export interface DemonLayoutProps extends Partial<StyleProps> {
@@ -475,8 +475,9 @@ DemonLayout.defaultProps = {
   // // ),
   item6: (
     <Rank
-      // title="医疗总费用TOP5"
+      title="医疗总费用TOP5"
       // titleStyle={{ textAlign: 'center' }}
+      // showHeader={false}
       dataset={[
         {
           name: '中国科学技术大学附属第一医院(安徽省立医院)',

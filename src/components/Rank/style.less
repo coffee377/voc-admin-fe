@@ -1,0 +1,90 @@
+@import '~antd/dist/antd.less'; // 引入官方提供的 less 样式入口文件
+
+@rank-border-width: 1px; // width of the border for a component
+@rank-border-style: dashed; // style of a components border
+@rank-border-color: hsv(0, 0, 91%); // split border inside a component
+@rank-table-row-hover-bg: color(
+  ~`colorPalette('@{primary-color}', 5) `
+); // split border inside a component
+
+.rankTable {
+  .top {
+    width: 24px;
+    height: 24px;
+    margin: 0 auto;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 20px;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #d7d7d7;
+    border-radius: 100%;
+  }
+
+  :global {
+    .ant-table {
+      &-title {
+        padding: 0 5px;
+      }
+
+      &-thead {
+        & > tr > th {
+          background: none;
+          border-bottom: @rank-border-width @rank-border-style @rank-border-color;
+        }
+      }
+
+      &-tbody {
+        & > tr {
+          &:hover {
+            background: none;
+            &:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td {
+              //color: white;
+              //background: @rank-table-row-hover-bg;
+              cursor: pointer;
+            }
+          }
+
+          & > td {
+            padding: 8px;
+            border-bottom: @rank-border-width @rank-border-style @rank-border-color;
+          }
+        }
+      }
+    }
+  }
+}
+
+.rankTableHeader {
+  :global {
+    .ant-table {
+      &-title {
+        padding: 0 5px;
+      }
+
+      &-thead {
+        & > tr > th {
+          border-bottom: @rank-border-width @rank-border-style @rank-border-color;
+        }
+      }
+
+      &-tbody {
+        & > tr {
+          &:hover {
+            background: none;
+            &:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td {
+              //color: white;
+              background: none;
+            }
+          }
+
+          & > td {
+            padding: 8px;
+            border-bottom: none;
+          }
+        }
+      }
+    }
+  }
+}

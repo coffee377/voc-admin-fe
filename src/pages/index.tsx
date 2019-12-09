@@ -7,7 +7,7 @@ import styles from './index.less';
 import { CodePreview } from '@/components';
 import DemonLayout from '@/layouts/DemonLayout';
 import { EventMap } from '@/components/Echarts';
-import Rank from '@/components/Ranking';
+import Rank from '@/components/Rank';
 
 interface IndexProps {
   dispatch: Dispatch<any>;

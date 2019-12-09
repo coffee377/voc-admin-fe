@@ -17,6 +17,7 @@ module.exports = {
     'no-plusplus': 0,
     'no-console': 0,
     'no-shadow': 0,
+    'dot-notation': 0,
   },
 };
 // import { strictEslint } from "@umijs/fabric";
